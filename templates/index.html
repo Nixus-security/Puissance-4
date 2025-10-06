@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Accueil</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Bienvenue !</h1>
+  <p>Remplis le formulaire pour créer ta carte d’identité :</p>
+
+  <form action="/idcard" method="POST">
+    <label>Nom :</label>
+    <input type="text" name="name" required><br>
+
+    <label>Âge :</label>
+    <input type="number" name="age" required><br>
+
+    <label>Citation :</label>
+    <input type="text" name="quote" required><br>
+
+    <label>Hobby :</label>
+    <input type="text" name="hobby" required><br>
+
+    <button type="submit">Créer la carte</button>
+  </form>
+</body>
+</html>

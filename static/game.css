@@ -1,0 +1,564 @@
+/* Container principal du jeu */
+.game-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Gravité normale */
+body.normal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: background 1s ease;
+}
+
+/* Gravité inversée */
+body.inverted {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  transition: background 1s ease;
+  animation: invertedPulse 2s infinite;
+}
+
+@keyframes invertedPulse {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.1);
+  }
+}
+
+/* Header du jeu */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.game-header h1 {
+  font-size: 2em;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Infos des joueurs */
+.players-info {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.player-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 25px;
+  border-radius: 12px;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  opacity: 0.6;
+}
+
+.player-card.active {
+  opacity: 1;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  animation: activePlayer 1s infinite;
+}
+
+@keyframes activePlayer {
+  0%, 100% {
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 5px 30px rgba(102, 126, 234, 0.6);
+  }
+}
+
+.player-card span {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+}
+
+.player-card.active span {
+  color: #fff;
+}
+
+.player-token {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.player-token.player1 {
+  background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+}
+
+.player-token.player2 {
+  background: radial-gradient(circle at 30% 30%, #ffd93d, #f9ca24);
+}
+
+.vs {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #667eea;
+}
+
+/* Indicateur de tour */
+.turn-indicator {
+  text-align: center;
+  margin-bottom: 25px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.turn-indicator p {
+  font-size: 1.3em;
+  color: #333;
+  margin: 0;
+}
+
+.current-player-name {
+  font-size: 1.4em;
+}
+
+.current-player-name.player1 {
+  color: #ff6b6b;
+}
+
+.current-player-name.player2 {
+  color: #ffd93d;
+}
+
+.gravity-warning {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 15px;
+  animation: warningBlink 1s infinite;
+}
+
+@keyframes warningBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Plateau de jeu */
+.board-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.columns-buttons {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.column-btn {
+  padding: 10px 20px;
+  font-size: 1.5em;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.column-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2, #667eea);
+}
+
+.column-btn:active {
+  transform: translateY(0);
+}
+
+/* Gravité inversée - boutons en bas */
+body.inverted .columns-buttons {
+  order: 2;
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+
+body.inverted .column-btn {
+  transform: rotate(180deg);
+}
+
+body.inverted .board {
+  order: 1;
+}
+
+.board {
+  background: #2c3e50;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.board-inverted {
+  animation: boardShake 0.5s;
+}
+
+@keyframes boardShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.board table {
+  border-collapse: separate;
+  border-spacing: 8px;
+}
+
+.cell {
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, #34495e, #2c3e50);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.cell-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.token {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.token.empty {
+  background: transparent;
+}
+
+.token.player1 {
+  background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+  box-shadow: 0 3px 10px rgba(255, 107, 107, 0.5),
+              inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.token.player2 {
+  background: radial-gradient(circle at 30% 30%, #ffd93d, #f9ca24);
+  box-shadow: 0 3px 10px rgba(255, 217, 61, 0.5),
+              inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Animation de chute */
+.animate-drop {
+  animation: dropToken 0.5s ease-out;
+}
+
+@keyframes dropToken {
+  0% {
+    transform: translateY(-300px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(10px);
+  }
+  80% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Stats du jeu */
+.game-stats {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.game-stats p {
+  color: #333;
+  font-size: 1.1em;
+  margin: 5px 0;
+}
+
+/* Pages victoire et égalité */
+.victory-container,
+.draw-container {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 50px;
+  border-radius: 25px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.victory-title {
+  font-size: 3em;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 30px;
+  animation: victoryBounce 1s infinite;
+}
+
+@keyframes victoryBounce {
+  0%, 100% {
+    transform: scale(1) rotate(-2deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(2deg);
+  }
+}
+
+.draw-title {
+  font-size: 3em;
+  color: #6c757d;
+  margin-bottom: 30px;
+}
+
+/* Confettis */
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #667eea;
+  animation: confettiFall 3s linear infinite;
+}
+
+.confetti:nth-child(1) {
+  left: 10%;
+  animation-delay: 0s;
+  background: #ff6b6b;
+}
+
+.confetti:nth-child(2) {
+  left: 30%;
+  animation-delay: 0.5s;
+  background: #ffd93d;
+}
+
+.confetti:nth-child(3) {
+  left: 50%;
+  animation-delay: 1s;
+  background: #667eea;
+}
+
+.confetti:nth-child(4) {
+  left: 70%;
+  animation-delay: 1.5s;
+  background: #764ba2;
+}
+
+.confetti:nth-child(5) {
+  left: 90%;
+  animation-delay: 2s;
+  background: #f093fb;
+}
+
+@keyframes confettiFall {
+  0% {
+    top: -10%;
+    transform: rotate(0deg);
+  }
+  100% {
+    top: 110%;
+    transform: rotate(720deg);
+  }
+}
+
+.winner-card {
+  margin: 30px 0;
+  padding: 30px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 20px;
+  color: #fff;
+}
+
+.winner-token {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: winnerPulse 1.5s infinite;
+}
+
+@keyframes winnerPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.winner-token.player1 {
+  background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+}
+
+.winner-token.player2 {
+  background: radial-gradient(circle at 30% 30%, #ffd93d, #f9ca24);
+}
+
+.winner-card h2 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.winner-card p {
+  font-size: 1.3em;
+}
+
+/* Égalité */
+.draw-info {
+  margin: 30px 0;
+  color: #666;
+  font-size: 1.2em;
+}
+
+.players-draw {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  margin: 30px 0;
+}
+
+.player-draw-card {
+  text-align: center;
+}
+
+.draw-token {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 0 auto 15px;
+}
+
+.draw-token.player1 {
+  background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.draw-token.player2 {
+  background: radial-gradient(circle at 30% 30%, #ffd93d, #f9ca24);
+  box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4);
+}
+
+.player-draw-card h3 {
+  color: #333;
+  font-size: 1.5em;
+}
+
+.draw-separator {
+  font-size: 2em;
+}
+
+/* Résumé de partie */
+.game-summary {
+  margin: 30px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 15px;
+  color: #333;
+}
+
+.game-summary p {
+  margin: 10px 0;
+  font-size: 1.1em;
+}
+
+/* Boutons d'action */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .game-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .players-info {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .vs {
+    transform: rotate(90deg);
+  }
+  
+  .cell {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .token {
+    width: 38px;
+    height: 38px;
+  }
+  
+  .column-btn {
+    padding: 8px 12px;
+    font-size: 1.2em;
+  }
+  
+  .victory-container,
+  .draw-container {
+    padding: 30px 20px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

@@ -2,33 +2,150 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Puissance 4</title>
+  <title>Puissance 4 - Partie</title>
   <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #283E51, #485563);
+      font-family: "Poppins", sans-serif;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 2rem;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .players {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .player {
+      padding: 1rem 2rem;
+      border-radius: 15px;
+      transition: all 0.3s ease;
+      font-weight: bold;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .active {
+      background: #ffcc00;
+      color: #222;
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255,255,255,0.5);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(var(--cols), 70px);
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .cell {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .cell.player1 {
+      background: #ff4b5c;
+    }
+
+    .cell.player2 {
+      background: #00aaff;
+    }
+
+    .cell:hover {
+      transform: translateY(-5px);
+      cursor: pointer;
+    }
+
+    .info {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      background: #ffcc00;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #fff;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
   <h1>Puissance 4</h1>
 
-  <div id="plateau">
-    {{ range $i, $ligne := .Grille }}
-      <div class="row">
-        {{ range $j, $cell := $ligne }}
-          <div class="cell" data-row="{{ $i }}" data-col="{{ $j }}">{{ $cell }}</div>
-        {{ end }}
-      </div>
-    {{ end }}
+  <div class="players">
+    <div class="player {{if eq .CurrentPlayer 1}}active{{end}}">
+      {{.Player1Name}}
+    </div>
+    <div class="player {{if eq .CurrentPlayer 2}}active{{end}}">
+      {{.Player2Name}}
+    </div>
   </div>
 
-  <div id="controls">
-    {{ range $i, $_ := .Grille 0 }}
-      <button class="col-btn" data-col="{{ $i }}">▼</button>
-    {{ end }}
+  <div class="info">
+    Difficulté : <strong>{{.Difficulty}}</strong> — Tour n°{{.TurnCount}}  
+    {{if .GravityInverted}}<br><em>⚠️ Gravité inversée !</em>{{end}}
   </div>
 
-  <div id="overlay-fin" style="display:none;">
-    <div class="texte-fin"></div>
-    <button id="btn-rejouer">Rejouer</button>
-  </div>
+  <!-- Définir variable CSS pour le nombre de colonnes -->
+  <script>
+    document.documentElement.style.setProperty("--cols", "{{.Columns}}");
+  </script>
 
-  <script src="/static/game.js"></script>
+  <form id="game-form" action="/play" method="POST">
+    <div class="board">
+      {{range $rowIndex, $row := .Board}}
+        {{range $colIndex, $cell := $row}}
+          <button 
+            class="cell {{if eq $cell 1}}player1{{else if eq $cell 2}}player2{{end}}" 
+            name="column" 
+            value="{{$colIndex}}" 
+            type="submit">
+          </button>
+        {{end}}
+      {{end}}
+    </div>
+  </form>
+
+  <form action="/restart" method="GET">
+    <button type="submit">🔁 Recommencer</button>
+  </form>
+
+  <script>
+    // Animation d'apparition des cellules
+    document.querySelectorAll('.cell').forEach((cell, i) => {
+      cell.style.opacity = 0;
+      setTimeout(() => {
+        cell.style.transition = "opacity 0.4s ease";
+        cell.style.opacity = 1;
+      }, 40 * i);
+    });
+  </script>
 </body>
 </html>

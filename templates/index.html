@@ -2,27 +2,164 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Accueil</title>
+  <title>Puissance 4 - Accueil</title>
   <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #4a90e2, #9013fe);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 3rem;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    form {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      width: 320px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      transform: scale(0.95);
+      animation: appear 0.8s ease forwards;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    label {
+      font-size: 1.1rem;
+      margin-bottom: -8px;
+    }
+
+    input, select {
+      padding: 0.7rem;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      font-size: 1rem;
+      transition: 0.3s;
+      width: 100%;
+    }
+
+    input:focus, select:focus {
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+      transform: scale(1.03);
+    }
+
+    button {
+      background: #ffcc00;
+      color: #333;
+      font-weight: bold;
+      border: none;
+      padding: 0.9rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: #fff;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    }
+
+    .difficulty {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    select {
+      cursor: pointer;
+      background-color: #fff;
+      color: #333;
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Petites particules animées pour le fond */
+    .bubble {
+      position: absolute;
+      bottom: -100px;
+      width: 20px;
+      height: 20px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      animation: rise 8s infinite ease-in;
+    }
+
+    @keyframes rise {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Bienvenue !</h1>
-  <p>Remplis le formulaire pour créer ta carte d’identité :</p>
+  <h1>Puissance 4</h1>
 
-  <form action="/idcard" method="POST">
-    <label>Nom :</label>
-    <input type="text" name="name" required><br>
+  <form action="/" method="POST">
+    <label for="player1">Nom du joueur 1 :</label>
+    <input type="text" id="player1" name="player1" placeholder="Joueur 1" required>
 
-    <label>Âge :</label>
-    <input type="number" name="age" required><br>
+    <label for="player2">Nom du joueur 2 :</label>
+    <input type="text" id="player2" name="player2" placeholder="Joueur 2" required>
 
-    <label>Citation :</label>
-    <input type="text" name="quote" required><br>
+    <div class="difficulty">
+      <label for="difficulty">Difficulté :</label>
+      <select id="difficulty" name="difficulty" required>
+        <option value="">Choisir...</option>
+        <option value="easy">Facile</option>
+        <option value="normal">Normal</option>
+        <option value="hard">Difficile</option>
+      </select>
+    </div>
 
-    <label>Hobby :</label>
-    <input type="text" name="hobby" required><br>
-
-    <button type="submit">Créer la carte</button>
+    <button type="submit">🎮 Commencer la partie</button>
   </form>
+
+  <footer>© 2025 - Puissance 4 by Nixus</footer>
+
+  <!-- Script pour bulles animées -->
+  <script>
+    const colors = ["rgba(255,255,255,0.3)", "rgba(255,255,255,0.2)", "rgba(255,255,255,0.4)"];
+    for (let i = 0; i < 25; i++) {
+      const bubble = document.createElement("div");
+      bubble.classList.add("bubble");
+      bubble.style.left = `${Math.random() * 100}%`;
+      bubble.style.width = bubble.style.height = `${10 + Math.random() * 30}px`;
+      bubble.style.background = colors[Math.floor(Math.random() * colors.length)];
+      bubble.style.animationDuration = `${6 + Math.random() * 6}s`;
+      document.body.appendChild(bubble);
+    }
+  </script>
 </body>
 </html>
+

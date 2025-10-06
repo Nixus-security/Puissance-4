@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Victoire 🎉</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #2b5876, #4e4376);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .winner-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            animation: popIn 0.8s ease forwards;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            animation: pulse 1.2s infinite;
+        }
+        p {
+            font-size: 1.2rem;
+        }
+        .btn-container {
+            margin-top: 30px;
+        }
+        .btn {
+            background: #ffb703;
+            color: #222;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #ffd166;
+            transform: scale(1.05);
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); color: #fff; }
+            50% { transform: scale(1.1); color: #ffb703; }
+        }
+        @keyframes popIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="winner-card">
+        <h1>🎉 Félicitations {{if eq .Winner 1}}{{.Player1Name}}{{else}}{{.Player2Name}}{{end}} !</h1>
+        <p>Tu remportes la partie en mode <strong>{{.Difficulty}}</strong> après {{.TurnCount}} tours.</p>
+        <div class="btn-container">
+            <form action="/restart" method="get">
+                <button class="btn">🔁 Rejouer</button>
+            </form>
+            <form action="/" method="get">
+                <button class="btn">🏠 Menu principal</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 🎊 Confettis en boucle courte
+        function launchConfetti() {
+            const duration = 2 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 4,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                });
+                confetti({
+                    particleCount: 4,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            })();
+        }
+
+        launchConfetti();
+    </script>
+
+</body>
+</html>

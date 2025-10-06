@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Puissance 4</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Puissance 4</h1>
+
+  <div id="plateau">
+    {{ range $i, $ligne := .Grille }}
+      <div class="row">
+        {{ range $j, $cell := $ligne }}
+          <div class="cell" data-row="{{ $i }}" data-col="{{ $j }}">{{ $cell }}</div>
+        {{ end }}
+      </div>
+    {{ end }}
+  </div>
+
+  <div id="controls">
+    {{ range $i, $_ := .Grille 0 }}
+      <button class="col-btn" data-col="{{ $i }}">▼</button>
+    {{ end }}
+  </div>
+
+  <div id="overlay-fin" style="display:none;">
+    <div class="texte-fin"></div>
+    <button id="btn-rejouer">Rejouer</button>
+  </div>
+
+  <script src="/static/game.js"></script>
+</body>
+</html>

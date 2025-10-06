@@ -10,3 +10,35 @@ input, button {
   margin: 5px;
   padding: 5px;
 }
+@keyframes tombe {
+  from { transform: translateY(-100px); opacity: 0.3; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.anim-tombe {
+  animation: tombe 0.4s ease-out;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #555;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.rouge {
+  background-color: red;
+  border-radius: 50%;
+}
+
+.jaune {
+  background-color: gold;
+  border-radius: 50%;
+}
+.empty {
+  background-color: white;
+  border-radius: 50%;
+}

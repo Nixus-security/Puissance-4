@@ -27,6 +27,16 @@ body.inverted {
   }
 }
 
+@keyframes tombe {
+  from { transform: translateY(-100px); opacity: 0.2; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.anim-tombe {
+  animation: tombe 0.5s ease-out;
+}
+
+
 /* Header du jeu */
 .game-header {
   display: flex;

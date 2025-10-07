@@ -6,18 +6,52 @@
   <link rel="stylesheet" href="/static/style.css">
   <style>
     body {
-      background: linear-gradient(135deg, #283E51, #485563);
+      /* Fond animé avec motif diagonal comme index.html */
+      background: #121212;
+      background: linear-gradient(
+        135deg,
+        #121212 25%,
+        #1a1a1a 25%,
+        #1a1a1a 50%,
+        #121212 50%,
+        #121212 75%,
+        #1a1a1a 75%,
+        #1a1a1a
+      );
+      background-size: 40px 40px;
+      animation: move 4s linear infinite;
       font-family: "Poppins", sans-serif;
       color: #fff;
       text-align: center;
       margin: 0;
       padding: 2rem;
       overflow-x: hidden;
+      perspective: 1500px;
+    }
+
+    @keyframes move {
+      0% {
+        background-position: 0 0;
+      }
+      100% {
+        background-position: 40px 40px;
+      }
     }
 
     h1 {
       font-size: 2.5rem;
       margin-bottom: 1rem;
+      font-family: "Georgia", "Times New Roman", serif;
+      font-weight: 700;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    h1 .red {
+      color: #ff6b6b;
+    }
+
+    h1 .yellow {
+      color: #ffd93d;
     }
 
     .players {
@@ -32,15 +66,27 @@
       padding: 1rem 2rem;
       border-radius: 15px;
       font-weight: bold;
-      background: rgba(255,255,255,0.15);
+      background: rgba(26, 26, 26, 0.8);
+      border: 2px solid rgba(255, 255, 255, 0.2);
       transition: all 0.3s ease;
+      opacity: 0.6;
     }
 
     .active {
-      background: #ffcc00;
-      color: #222;
+      opacity: 1;
+      border: 2px solid #ffffff;
       transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(255,255,255,0.5);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      animation: activePulse 1.5s infinite;
+    }
+
+    @keyframes activePulse {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      }
+      50% {
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+      }
     }
 
     .board {
@@ -48,7 +94,24 @@
       grid-template-columns: repeat(var(--cols), 70px);
       gap: 6px;
       justify-content: center;
-      margin-bottom: 1.5rem;
+      margin: 0 auto 1.5rem;
+      background: rgba(26, 26, 26, 0.8);
+      padding: 2rem;
+      border-radius: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      max-width: 95vw;
+      overflow-x: auto;
+      position: relative;
+      transition: transform 1s ease-in-out, box-shadow 1s ease-in-out, border-color 1s ease-in-out;
+      transform-style: preserve-3d;
+    }
+
+    .board.inverted {
+      transform: rotateX(180deg);
+      box-shadow: 0 -10px 40px rgba(255, 107, 107, 0.5), 
+                  0 10px 40px rgba(255, 217, 61, 0.5);
+      border-color: rgba(255, 107, 107, 0.6);
     }
 
     .cell {
@@ -56,92 +119,413 @@
       width: 70px;
       height: 70px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.25);
+      background: rgba(255, 255, 255, 0.1);
       cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      transform: rotateX(0deg);
     }
 
-    .disc {
+    .board.inverted .cell {
+      transform: rotateX(180deg);
+    }
+
+    .cell:hover:not(.player1):not(.player2) {
+      transform: scale(1.05);
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .cell.player1 {
+      background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+      box-shadow: 0 3px 10px rgba(255, 107, 107, 0.5),
+                  inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+      border-color: #ff6b6b;
+      cursor: default;
+    }
+
+    .cell.player2 {
+      background: radial-gradient(circle at 30% 30%, #ffd93d, #f9ca24);
+      box-shadow: 0 3px 10px rgba(255, 217, 61, 0.5),
+                  inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+      border-color: #ffd93d;
+      cursor: default;
+    }
+
+    /* Token qui tombe */
+    .falling-token {
       position: absolute;
-      left: 0;
-      width: 70px;
-      height: 70px;
       border-radius: 50%;
       transition: top 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     }
 
-    .player1 {
-      background: #ff4b5c;
+    /* Inverser le token qui tombe quand le plateau est inversé pour qu'il reste à l'endroit */
+    .board.inverted .falling-token {
+      transform: rotateX(180deg);
     }
 
-    .player2 {
-      background: #00aaff;
+    .falling-token.player1 {
+      background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+    }
+
+    .falling-token.player2 {
+      background: radial-gradient(circle at 30% 30%, #ffd93d, #f9ca24);
     }
 
     .info {
       font-size: 1.1rem;
       margin-bottom: 1rem;
+      background: rgba(26, 26, 26, 0.8);
+      padding: 1rem 2rem;
+      border-radius: 15px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      display: inline-block;
+    }
+
+    #gravity-warning {
+      margin-top: 0.5rem;
+    }
+
+    #gravity-warning.hide {
+      display: none;
+    }
+
+    #gravity-warning.show {
+      display: block;
     }
 
     button.restart {
       padding: 0.8rem 1.5rem;
       border: none;
-      border-radius: 10px;
-      background: #ffcc00;
+      border-radius: 30px;
+      background: #121212;
+      color: #ffffff;
       font-weight: bold;
-      color: #333;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s ease;
       margin-top: 1rem;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    button.restart::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 300%;
+      height: 300%;
+      background-color: #ffffff;
+      transition: all 0.3s ease;
+      border-radius: 50%;
+      z-index: -1;
+      transform: translate(-50%, -50%) scale(0);
+    }
+
+    button.restart:hover::before {
+      transform: translate(-50%, -50%) scale(1);
     }
 
     button.restart:hover {
-      background: #fff;
-      transform: scale(1.05);
+      color: #121212;
+      transform: translateY(-5px);
+      box-shadow: 0 15px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .gravity-warning {
+      background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+      color: #121212;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-bottom: 15px;
+      animation: warningBlink 1s infinite, shake 0.5s ease-in-out;
+    }
+
+    @keyframes warningBlink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    @keyframes shake {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-5px) rotate(-2deg);
+      }
+      75% {
+        transform: translateX(5px) rotate(2deg);
+      }
+    }
+
+    /* Pour les petits écrans */
+    @media (max-width: 768px) {
+      .board {
+        grid-template-columns: repeat(var(--cols), 50px);
+        padding: 1rem;
+      }
+
+      .cell {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .board {
+        grid-template-columns: repeat(var(--cols), 40px);
+        padding: 0.5rem;
+        gap: 4px;
+      }
+
+      .cell {
+        width: 40px;
+        height: 40px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Puissance 4</h1>
+  <h1><span class="red">PUISSANCE</span> <span class="yellow">4</span></h1>
 
   <div class="players">
-    <div class="player {{if eq .CurrentPlayer 1}}active{{end}}">
-      {{.Player1Name}}
+    <div class="player player1-card {{if eq .CurrentPlayer 1}}active{{end}}">
+      🔴 <span class="player1-name">{{.Player1Name}}</span>
     </div>
-    <div class="player {{if eq .CurrentPlayer 2}}active{{end}}">
-      {{.Player2Name}}
+    <div class="player player2-card {{if eq .CurrentPlayer 2}}active{{end}}">
+      🟡 <span class="player2-name">{{.Player2Name}}</span>
     </div>
   </div>
 
-  <div class="info">
-    Difficulté : <strong>{{.Difficulty}}</strong> — Tour n°{{.TurnCount}}
-    {{if .GravityInverted}}<br><em>⚠️ Gravité inversée !</em>{{end}}
+  <div class="info" id="game-info">
+    Difficulté : <strong>{{.Difficulty}}</strong> — Tour n°<span id="turn-count">{{.TurnCount}}</span>
+    <div id="gravity-warning" class="{{if .GravityInverted}}show{{else}}hide{{end}}">
+      <span class="gravity-warning">⚠️ Gravité inversée !</span>
+    </div>
   </div>
 
-  <script>
-    document.documentElement.style.setProperty("--cols", "{{.Columns}}");
-   </script>
-
-  <form id="game-form" action="/play" method="POST">
-    <div class="board">
-      {{range $rowIndex, $row := .Board}}
-        {{range $colIndex, $cell := $row}}
-          <button 
-            class="cell {{if eq $cell 1}}player1{{else if eq $cell 2}}player2{{end}}" 
-            name="column" 
-            value="{{$colIndex}}" 
-            type="submit">
-          </button>
-        {{end}}
+  <div class="board {{if .GravityInverted}}inverted{{end}}" id="board" data-rows="{{.Rows}}" data-cols="{{.Columns}}" data-turn="{{.TurnCount}}" data-gravity-inverted="{{.GravityInverted}}">
+    {{range $rowIndex, $row := .Board}}
+      {{range $colIndex, $cell := $row}}
+        <button 
+          class="cell {{if eq $cell 1}}player1{{else if eq $cell 2}}player2{{end}}" 
+          data-row="{{$rowIndex}}"
+          data-col="{{$colIndex}}"
+          type="button">
+        </button>
       {{end}}
-    </div>
-  </form>
+    {{end}}
+  </div>
 
   <form action="/restart" method="GET">
-    <button type="submit">🔁 Recommencer</button>
+    <button class="restart" type="submit">🔁 Recommencer</button>
   </form>
 
   <script>
-    // Animation d'apparition des cellules
+    // Récupérer les données depuis les attributs data
+    const board = document.getElementById('board');
+    const ROWS = parseInt(board.getAttribute('data-rows'));
+    const COLS = parseInt(board.getAttribute('data-cols'));
+    let currentTurnCount = parseInt(board.getAttribute('data-turn'));
+    let isGravityInverted = board.getAttribute('data-gravity-inverted') === 'true';
+    let isPlaying = false;
+    
+    // Définir la variable CSS pour les colonnes
+    document.documentElement.style.setProperty("--cols", COLS);
+    
+    // Ajouter les événements de clic sur les cellules
+    const cells = document.querySelectorAll('.cell');
+    
+    cells.forEach(cell => {
+      cell.addEventListener('click', async function() {
+        if (isPlaying) return; // Empêcher les clics multiples
+        
+        const col = parseInt(this.getAttribute('data-col'));
+        const row = parseInt(this.getAttribute('data-row'));
+        
+        // Vérifier si la cellule est déjà occupée
+        if (this.classList.contains('player1') || this.classList.contains('player2')) {
+          return;
+        }
+        
+        // Trouver la ligne de destination selon la gravité
+        let targetRow = -1;
+        
+        if (!isGravityInverted) {
+          // Gravité normale : chercher du bas vers le haut
+          for (let r = ROWS - 1; r >= 0; r--) {
+            const targetCell = document.querySelector(`.cell[data-row="${r}"][data-col="${col}"]`);
+            if (targetCell && !targetCell.classList.contains('player1') && !targetCell.classList.contains('player2')) {
+              targetRow = r;
+              break;
+            }
+          }
+        } else {
+          // Gravité inversée : chercher du haut vers le bas
+          for (let r = 0; r < ROWS; r++) {
+            const targetCell = document.querySelector(`.cell[data-row="${r}"][data-col="${col}"]`);
+            if (targetCell && !targetCell.classList.contains('player1') && !targetCell.classList.contains('player2')) {
+              targetRow = r;
+              break;
+            }
+          }
+        }
+        
+        if (targetRow === -1) return; // Colonne pleine
+        
+        isPlaying = true;
+        
+        // Créer et animer le pion qui tombe
+        await animateTokenDrop(col, targetRow, isGravityInverted);
+        
+        // Envoyer la requête au serveur
+        try {
+          const response = await fetch('/play', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ col: col })
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            // Mettre à jour l'état de la gravité
+            isGravityInverted = data.gravityInverted;
+            
+            // Mettre à jour le plateau
+            updateBoard(data);
+            
+            // Vérifier fin de partie
+            if (data.finPartie) {
+              setTimeout(() => {
+                // Vérifier si c'est une victoire ou égalité
+                if (data.message && data.message.includes('Victoire')) {
+                  window.location.href = '/win';
+                } else if (data.message && data.message.includes('nul')) {
+                  window.location.href = '/draw';
+                }
+              }, 800);
+            }
+          } else {
+            console.error('Erreur serveur:', data);
+          }
+        } catch (error) {
+          console.error('Erreur:', error);
+        }
+        
+        isPlaying = false;
+      });
+    });
+    
+    async function animateTokenDrop(col, targetRow, gravityInverted) {
+      return new Promise((resolve) => {
+        const boardElement = document.getElementById('board');
+        const targetCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${col}"]`);
+        
+        if (!targetCell) {
+          resolve();
+          return;
+        }
+        
+        // Déterminer le joueur actuel
+        const isPlayer1 = document.querySelector('.player1-card').classList.contains('active');
+        
+        // Créer le pion temporaire
+        const tempToken = document.createElement('div');
+        tempToken.className = 'falling-token';
+        tempToken.classList.add(isPlayer1 ? 'player1' : 'player2');
+        
+        // Positionner le pion
+        const rect = targetCell.getBoundingClientRect();
+        const boardRect = boardElement.getBoundingClientRect();
+        
+        const cellWidth = rect.width;
+        const cellHeight = rect.height;
+        
+        tempToken.style.left = (rect.left - boardRect.left) + 'px';
+        tempToken.style.width = cellWidth + 'px';
+        tempToken.style.height = cellHeight + 'px';
+        
+        // Position initiale : toujours du haut
+        // La rotation du plateau gère l'effet visuel automatiquement
+        tempToken.style.top = '-70px';
+        
+        boardElement.appendChild(tempToken);
+        
+        // Animer la chute vers la destination
+        setTimeout(() => {
+          tempToken.style.top = (rect.top - boardRect.top) + 'px';
+        }, 50);
+        
+        // Nettoyer après l'animation
+        setTimeout(() => {
+          tempToken.remove();
+          // Ajouter la classe au vrai bouton
+          targetCell.classList.add(isPlayer1 ? 'player1' : 'player2');
+          resolve();
+        }, 600);
+      });
+    }
+    
+    function updateBoard(data) {
+      // Mettre à jour le compteur de tours
+      currentTurnCount++;
+      document.getElementById('turn-count').textContent = currentTurnCount;
+      
+      // Mettre à jour l'affichage de la gravité inversée
+      const gravityWarning = document.getElementById('gravity-warning');
+      const boardElement = document.getElementById('board');
+      
+      if (data.gravityInverted) {
+        gravityWarning.classList.remove('hide');
+        gravityWarning.classList.add('show');
+        // Ajouter la classe inverted pour l'animation de rotation
+        boardElement.classList.add('inverted');
+      } else {
+        gravityWarning.classList.remove('show');
+        gravityWarning.classList.add('hide');
+        // Retirer la classe inverted pour remettre le plateau à l'endroit
+        boardElement.classList.remove('inverted');
+      }
+      
+      // Mettre à jour le joueur actif
+      const player1Card = document.querySelector('.player1-card');
+      const player2Card = document.querySelector('.player2-card');
+      
+      if (data.joueurActuel === 1) {
+        player1Card.classList.add('active');
+        player2Card.classList.remove('active');
+      } else {
+        player1Card.classList.remove('active');
+        player2Card.classList.add('active');
+      }
+      
+      // Mettre à jour toutes les cellules selon la grille
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
+          if (cell && data.grille[r][c] !== 0) {
+            cell.classList.remove('player1', 'player2');
+            cell.classList.add(data.grille[r][c] === 1 ? 'player1' : 'player2');
+          }
+        }
+      }
+    }
+
+    // Animation d'apparition des cellules au chargement
     document.querySelectorAll('.cell').forEach((cell, i) => {
       cell.style.opacity = 0;
       setTimeout(() => {

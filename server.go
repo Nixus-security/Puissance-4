@@ -331,8 +331,8 @@ func main() {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
-	log.Println("✅ Serveur Power4 démarré sur http://localhost:8080")
-	http.ListenAndServe(":8080", mux)
+	log.Println("✅ Serveur Power4 démarré sur http://localhost:8000")
+	http.ListenAndServe(":8000", mux)
 }
 
 // 🔧 Ajout d'une petite méthode utilitaire :

@@ -214,7 +214,6 @@ func main() {
 		http.StripPrefix("/static/",
 			http.FileServer(http.Dir("./static"))))
 
-	// 🎬 Page splash screen (nouvelle route principale)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			http.NotFound(w, r)
@@ -223,7 +222,6 @@ func main() {
 		renderTemplate(w, "splash.html", nil)
 	})
 
-	// 🏠 Page d'accueil / menu (ancienne route "/")
 	mux.HandleFunc("/menu", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			renderTemplate(w, "index.html", difficulties)
@@ -261,7 +259,7 @@ func main() {
 			return
 		}
 
-		// --- 🔍 Cas JSON (JavaScript Fetch) ---
+		// ---  Cas JSON (JavaScript Fetch) ---
 		if r.Header.Get("Content-Type") == "application/json" {
 			var payload struct {
 				Col int `json:"col"`
@@ -299,7 +297,7 @@ func main() {
 			return
 		}
 
-		// --- 🧾 Cas HTML (formulaire classique) ---
+		// ---  Cas HTML (formulaire classique) ---
 		columnStr := r.FormValue("column")
 		column, err := strconv.Atoi(columnStr)
 		if err != nil {

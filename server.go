@@ -118,7 +118,7 @@ func (g *Game) PlayMove(column int) (int, int, bool) {
 	return -1, -1, false
 }
 
-// Vérifie la victoire (inchangé)
+// Vérifie la victoire
 func (g *Game) checkWin(row, col int) bool {
 	player := g.Board[row][col]
 	count := 1
@@ -214,8 +214,17 @@ func main() {
 		http.StripPrefix("/static/",
 			http.FileServer(http.Dir("./static"))))
 
-	// Page d’accueil
+	// 🎬 Page splash screen (nouvelle route principale)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+		renderTemplate(w, "splash.html", nil)
+	})
+
+	// 🏠 Page d'accueil / menu (ancienne route "/")
+	mux.HandleFunc("/menu", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			renderTemplate(w, "index.html", difficulties)
 			return
@@ -227,7 +236,7 @@ func main() {
 			difficulty := r.FormValue("difficulty")
 
 			if player1 == "" || player2 == "" || difficulty == "" {
-				http.Redirect(w, r, "/", http.StatusSeeOther)
+				http.Redirect(w, r, "/menu", http.StatusSeeOther)
 				return
 			}
 
@@ -239,16 +248,16 @@ func main() {
 	// Page du jeu
 	mux.HandleFunc("/game", func(w http.ResponseWriter, r *http.Request) {
 		if currentGame == nil {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+			http.Redirect(w, r, "/menu", http.StatusSeeOther)
 			return
 		}
 		renderTemplate(w, "game.html", currentGame)
 	})
 
-	// 🧠 Nouvelle version améliorée de /play
+	// Jouer un coup
 	mux.HandleFunc("/play", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost || currentGame == nil {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+			http.Redirect(w, r, "/menu", http.StatusSeeOther)
 			return
 		}
 
@@ -312,7 +321,7 @@ func main() {
 	// Routes win/draw/restart
 	mux.HandleFunc("/win", func(w http.ResponseWriter, r *http.Request) {
 		if currentGame == nil {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+			http.Redirect(w, r, "/menu", http.StatusSeeOther)
 			return
 		}
 		renderTemplate(w, "win.html", currentGame)
@@ -320,7 +329,7 @@ func main() {
 
 	mux.HandleFunc("/draw", func(w http.ResponseWriter, r *http.Request) {
 		if currentGame == nil {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+			http.Redirect(w, r, "/menu", http.StatusSeeOther)
 			return
 		}
 		renderTemplate(w, "draw.html", currentGame)
@@ -328,14 +337,15 @@ func main() {
 
 	mux.HandleFunc("/restart", func(w http.ResponseWriter, r *http.Request) {
 		currentGame = nil
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/menu", http.StatusSeeOther)
 	})
 
 	log.Println("✅ Serveur Power4 démarré sur http://localhost:8000")
+	log.Println("🎬 Splash screen affiché pendant 5 secondes, puis redirection vers le menu")
 	http.ListenAndServe(":8000", mux)
 }
 
-// 🔧 Ajout d'une petite méthode utilitaire :
+// Méthode utilitaire
 func (g *Game) PlayerName(id int) string {
 	if id == 1 {
 		return g.Player1Name

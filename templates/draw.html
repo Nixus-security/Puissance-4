@@ -2,83 +2,374 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Égalité 🤝</title>
     <link rel="stylesheet" href="/static/style.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #283048, #859398);
-            color: white;
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-            min-height: 100vh;
+            font-family: "Poppins", sans-serif;
+            /* Même fond animé que index.html */
+            background: #121212;
+            background: linear-gradient(
+                135deg,
+                #121212 25%,
+                #1a1a1a 25%,
+                #1a1a1a 50%,
+                #121212 50%,
+                #121212 75%,
+                #1a1a1a 75%,
+                #1a1a1a
+            );
+            background-size: 40px 40px;
+            animation: move 4s linear infinite;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
         }
-        .draw-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 20px;
+
+        @keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 40px 40px;
+            }
+        }
+
+        .draw-container {
+            background: rgba(26, 26, 26, 0.8);
             backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 600px;
+            box-shadow: 0 8px 25px rgba(18, 18, 18, 0.5), 
+                        0 0 40px rgba(255, 255, 255, 0.1);
             animation: fadeIn 1s ease forwards;
+            position: relative;
+            z-index: 10;
+            text-align: center;
         }
+
+        @keyframes fadeIn {
+            0% {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         h1 {
             font-size: 3rem;
-            margin-bottom: 15px;
-            animation: pulse 1.5s infinite;
+            font-family: "Georgia", "Times New Roman", serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
-        .players {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-        }
-        .btn-container {
-            margin-top: 25px;
-        }
-        .btn {
-            background: #00b4d8;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            margin: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn:hover {
-            background: #48cae4;
-            transform: scale(1.05);
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+
         @keyframes pulse {
-            0%, 100% { transform: scale(1); color: #fff; }
-            50% { transform: scale(1.1); color: #ade8f4; }
+            0%, 100% { 
+                transform: scale(1);
+                color: #fff;
+            }
+            50% { 
+                transform: scale(1.05);
+                color: #ffd93d;
+            }
+        }
+
+        .players-draw {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .player-draw-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .draw-token {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            animation: wobble 2s ease-in-out infinite;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .draw-token.player1 {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .draw-token.player2 {
+            background: radial-gradient(circle at 30% 30%, #ffd93d, #f9ca24);
+            box-shadow: 0 5px 20px rgba(255, 217, 61, 0.6);
+        }
+
+        @keyframes wobble {
+            0%, 100% {
+                transform: rotate(-5deg) scale(1);
+            }
+            50% {
+                transform: rotate(5deg) scale(1.05);
+            }
+        }
+
+        .player-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .player-draw-card:nth-child(1) .player-name {
+            color: #ff6b6b;
+        }
+
+        .player-draw-card:nth-child(3) .player-name {
+            color: #ffd93d;
+        }
+
+        .versus {
+            font-size: 2rem;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.6);
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .draw-message {
+            margin: 2rem 0 1rem;
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .game-info {
+            margin: 1rem 0 2rem;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .game-info strong {
+            color: #ffd93d;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .custom-button {
+            background-color: #121212;
+            color: #ffffff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .custom-button::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            z-index: -1;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        .custom-button:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.9;
+        }
+
+        .custom-button:hover {
+            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.6);
+            transform: translateY(-5px);
+            color: #121212;
+        }
+
+        .custom-button:active::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            animation: ripple 0.6s ease-out;
+            z-index: -1;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: translate(-50%, -50%) scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Bulles animées */
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: rise 8s infinite ease-in;
+            z-index: 1;
+        }
+
+        .bubble.yellow {
+            background: rgba(255, 217, 61, 0.4);
+            box-shadow: 0 0 10px rgba(255, 217, 61, 0.6);
+        }
+
+        .bubble.red {
+            background: rgba(255, 107, 107, 0.4);
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+        }
+
+        @keyframes rise {
+            0% { 
+                transform: translateY(0) scale(1); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(-120vh) scale(1.5); 
+                opacity: 0; 
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .draw-container {
+                padding: 2rem;
+                max-width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .players-draw {
+                gap: 1rem;
+            }
+
+            .draw-token {
+                width: 60px;
+                height: 60px;
+            }
+
+            .player-name {
+                font-size: 1.2rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .custom-button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-
-    <div class="draw-card">
-        <h1>🤝 ÉGALITÉ !</h1>
-        <div class="players">
-            <p>{{.Player1Name}} ⚔️ {{.Player2Name}}</p>
+    <div class="draw-container">
+        <h1>🤝 ÉGALITÉ ! 🤝</h1>
+        
+        <div class="players-draw">
+            <div class="player-draw-card">
+                <div class="draw-token player1"></div>
+                <div class="player-name">{{.Player1Name}}</div>
+            </div>
+            
+            <div class="versus">⚔️</div>
+            
+            <div class="player-draw-card">
+                <div class="draw-token player2"></div>
+                <div class="player-name">{{.Player2Name}}</div>
+            </div>
         </div>
-        <p>Vous avez terminé la partie sans vainqueur après {{.TurnCount}} tours.</p>
-        <p>Difficulté : <strong>{{.Difficulty}}</strong></p>
 
-        <div class="btn-container">
-            <form action="/restart" method="get">
-                <button class="btn">🔁 Rejouer</button>
+        <div class="draw-message">
+            Match nul ! Aucun vainqueur ne se dégage.
+        </div>
+        
+        <div class="game-info">
+            <p>Partie en mode <strong>{{.Difficulty}}</strong></p>
+            <p>Terminée après <strong>{{.TurnCount}} tours</strong></p>
+        </div>
+
+        <div class="action-buttons">
+            <form action="/restart" method="get" style="display: inline;">
+                <button class="custom-button" type="submit">🔁 Rejouer</button>
             </form>
-            <form action="/" method="get">
-                <button class="btn">🏠 Menu principal</button>
+            <form action="/menu" method="get" style="display: inline;">
+                <button class="custom-button" type="submit">🏠 Menu principal</button>
             </form>
         </div>
     </div>
 
+    <script>
+        // Bulles animées - 50% jaunes, 50% rouges
+        for (let i = 0; i < 25; i++) {
+            const bubble = document.createElement("div");
+            bubble.classList.add("bubble");
+            
+            if (i % 2 === 0) {
+                bubble.classList.add("yellow");
+            } else {
+                bubble.classList.add("red");
+            }
+            
+            bubble.style.left = `${Math.random() * 100}%`;
+            bubble.style.width = bubble.style.height = `${8 + Math.random() * 25}px`;
+            bubble.style.animationDuration = `${6 + Math.random() * 6}s`;
+            bubble.style.animationDelay = `${Math.random() * 3}s`;
+            document.body.appendChild(bubble);
+        }
+    </script>
 </body>
 </html>

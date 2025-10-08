@@ -6,93 +6,361 @@
     <link rel="stylesheet" href="/static/style.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #2b5876, #4e4376);
-            color: white;
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-            min-height: 100vh;
+            font-family: "Poppins", sans-serif;
+            /* Même fond animé que index.html */
+            background: #121212;
+            background: linear-gradient(
+                135deg,
+                #121212 25%,
+                #1a1a1a 25%,
+                #1a1a1a 50%,
+                #121212 50%,
+                #121212 75%,
+                #1a1a1a 75%,
+                #1a1a1a
+            );
+            background-size: 40px 40px;
+            animation: move 4s linear infinite;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
         }
-        .winner-card {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 40px;
-            border-radius: 20px;
+
+        @keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 40px 40px;
+            }
+        }
+
+        .winner-container {
+            background: rgba(26, 26, 26, 0.8);
             backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 600px;
+            box-shadow: 0 8px 25px rgba(18, 18, 18, 0.5), 
+                        0 0 40px rgba(255, 255, 255, 0.1);
             animation: popIn 0.8s ease forwards;
+            position: relative;
+            z-index: 10;
+            text-align: center;
         }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         h1 {
             font-size: 3rem;
-            margin-bottom: 10px;
-            animation: pulse 1.2s infinite;
+            font-family: "Georgia", "Times New Roman", serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+            animation: pulse 1.5s infinite, float 2s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
-        p {
-            font-size: 1.2rem;
+
+        h1 .trophy {
+            display: inline-block;
+            animation: rotate 2s ease-in-out infinite;
         }
-        .btn-container {
-            margin-top: 30px;
+
+        @keyframes rotate {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
         }
-        .btn {
-            background: #ffb703;
-            color: #222;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            margin: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn:hover {
-            background: #ffd166;
-            transform: scale(1.05);
-        }
+
         @keyframes pulse {
-            0%, 100% { transform: scale(1); color: #fff; }
-            50% { transform: scale(1.1); color: #ffb703; }
+            0%, 100% { 
+                transform: scale(1);
+            }
+            50% { 
+                transform: scale(1.05);
+                filter: brightness(1.2);
+            }
         }
-        @keyframes popIn {
-            from { transform: scale(0.5); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .winner-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 1.5rem 0;
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .winner-token {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 2rem auto;
+            animation: winnerPulse 1.5s infinite, spin 3s linear infinite;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .winner-token.player1 {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.6);
+        }
+
+        .winner-token.player2 {
+            background: radial-gradient(circle at 30% 30%, #ffd93d, #f9ca24);
+            box-shadow: 0 10px 40px rgba(255, 217, 61, 0.6);
+        }
+
+        @keyframes winnerPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .game-info {
+            margin: 1.5rem 0;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .game-info strong {
+            color: #ffd93d;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .custom-button {
+            background-color: #121212;
+            color: #ffffff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .custom-button::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            z-index: -1;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        .custom-button:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.9;
+        }
+
+        .custom-button:hover {
+            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.6);
+            transform: translateY(-5px);
+            color: #121212;
+        }
+
+        .custom-button:active::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            animation: ripple 0.6s ease-out;
+            z-index: -1;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: translate(-50%, -50%) scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Bulles animées */
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: rise 8s infinite ease-in;
+            z-index: 1;
+        }
+
+        .bubble.yellow {
+            background: rgba(255, 217, 61, 0.4);
+            box-shadow: 0 0 10px rgba(255, 217, 61, 0.6);
+        }
+
+        .bubble.red {
+            background: rgba(255, 107, 107, 0.4);
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+        }
+
+        @keyframes rise {
+            0% { 
+                transform: translateY(0) scale(1); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(-120vh) scale(1.5); 
+                opacity: 0; 
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .winner-container {
+                padding: 2rem;
+                max-width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .winner-name {
+                font-size: 1.8rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .custom-button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="winner-container">
+        <h1><span class="trophy">🏆</span> VICTOIRE ! <span class="trophy">🏆</span></h1>
+        
+        <div class="winner-token {{if eq .Winner 1}}player1{{else}}player2{{end}}"></div>
+        
+        <div class="winner-name">
+            {{if eq .Winner 1}}{{.Player1Name}}{{else}}{{.Player2Name}}{{end}}
+        </div>
+        
+        <div class="game-info">
+            <p>Remporte la partie en mode <strong>{{.Difficulty}}</strong></p>
+            <p>Partie terminée en <strong>{{.TurnCount}} tours</strong></p>
+        </div>
 
-    <div class="winner-card">
-        <h1>🎉 Félicitations {{if eq .Winner 1}}{{.Player1Name}}{{else}}{{.Player2Name}}{{end}} !</h1>
-        <p>Tu remportes la partie en mode <strong>{{.Difficulty}}</strong> après {{.TurnCount}} tours.</p>
-        <div class="btn-container">
-            <form action="/restart" method="get">
-                <button class="btn">🔁 Rejouer</button>
+        <div class="action-buttons">
+            <form action="/restart" method="get" style="display: inline;">
+                <button class="custom-button" type="submit">🔁 Rejouer</button>
             </form>
-            <form action="/" method="get">
-                <button class="btn">🏠 Menu principal</button>
+            <form action="/menu" method="get" style="display: inline;">
+                <button class="custom-button" type="submit">🏠 Menu principal</button>
             </form>
         </div>
     </div>
 
     <script>
-        // 🎊 Confettis en boucle courte
+        // Bulles animées - 50% jaunes, 50% rouges
+        for (let i = 0; i < 25; i++) {
+            const bubble = document.createElement("div");
+            bubble.classList.add("bubble");
+            
+            if (i % 2 === 0) {
+                bubble.classList.add("yellow");
+            } else {
+                bubble.classList.add("red");
+            }
+            
+            bubble.style.left = `${Math.random() * 100}%`;
+            bubble.style.width = bubble.style.height = `${8 + Math.random() * 25}px`;
+            bubble.style.animationDuration = `${6 + Math.random() * 6}s`;
+            bubble.style.animationDelay = `${Math.random() * 3}s`;
+            document.body.appendChild(bubble);
+        }
+
+        // Confettis en boucle
         function launchConfetti() {
-            const duration = 2 * 1000;
+            const duration = 3 * 1000;
             const end = Date.now() + duration;
 
             (function frame() {
                 confetti({
-                    particleCount: 4,
+                    particleCount: 5,
                     angle: 60,
                     spread: 55,
                     origin: { x: 0 },
+                    colors: ['#ff6b6b', '#ffd93d', '#ffffff']
                 });
                 confetti({
-                    particleCount: 4,
+                    particleCount: 5,
                     angle: 120,
                     spread: 55,
                     origin: { x: 1 },
+                    colors: ['#ff6b6b', '#ffd93d', '#ffffff']
                 });
 
                 if (Date.now() < end) {
@@ -101,8 +369,9 @@
             })();
         }
 
+        // Lancer les confettis au chargement et toutes les 5 secondes
         launchConfetti();
+        setInterval(launchConfetti, 5000);
     </script>
-
 </body>
 </html>

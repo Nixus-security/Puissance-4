@@ -339,7 +339,6 @@ func main() {
 	})
 
 	log.Println("✅ Serveur Power4 démarré sur http://localhost:8000")
-	log.Println("🎬 Splash screen affiché pendant 5 secondes, puis redirection vers le menu")
 	http.ListenAndServe(":8000", mux)
 }
 

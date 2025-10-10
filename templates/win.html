@@ -5,7 +5,6 @@
     <title>Victoire 🎉</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="/static/fullscreen.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -15,7 +14,6 @@
 
         body {
             font-family: "Poppins", sans-serif;
-            /* Même fond animé que index.html */
             background: #121212;
             background: linear-gradient(
                 135deg,
@@ -172,6 +170,27 @@
             color: #ffd93d;
         }
 
+        .random-phrase {
+            margin-top: 1rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            font-style: italic;
+            animation: fadeInScale 1s ease forwards 0.5s;
+            opacity: 0;
+        }
+
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         .action-buttons {
             display: flex;
             gap: 1rem;
@@ -242,7 +261,6 @@
             }
         }
 
-        /* Bulles animées */
         .bubble {
             position: absolute;
             bottom: -100px;
@@ -274,7 +292,6 @@
             }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .winner-container {
                 padding: 2rem;
@@ -312,20 +329,38 @@
         <div class="game-info">
             <p>Remporte la partie en mode <strong>{{.Difficulty}}</strong></p>
             <p>Partie terminée en <strong>{{.TurnCount}} tours</strong></p>
-            <p>Tié un tigre le sang</p>
+            <p class="random-phrase" id="randomPhrase"></p>
         </div>
 
         <div class="action-buttons">
             <form action="/restart" method="get" style="display: inline;">
-                <button class="custom-button" type="submit">REJOUER</button>
+                <button class="custom-button" type="submit">🔁 REJOUER</button>
             </form>
             <form action="/menu" method="get" style="display: inline;">
-                <button class="custom-button" type="submit"> MENU PRINCIPAL</button>
+                <button class="custom-button" type="submit">🏠 MENU PRINCIPAL</button>
             </form>
         </div>
     </div>
 
     <script>
+        // Liste des phrases aléatoires
+        const randomPhrases = [
+            "Tié le sang abris",
+            "P'tit gourmand là",
+            "Ça baise bien ?",
+            "M la présidente dégâts dégâts"
+        ];
+
+        // Fonction pour afficher une phrase aléatoire
+        function displayRandomPhrase() {
+            const randomIndex = Math.floor(Math.random() * randomPhrases.length);
+            const phraseElement = document.getElementById('randomPhrase');
+            phraseElement.textContent = randomPhrases[randomIndex];
+        }
+
+        // Afficher la phrase au chargement
+        displayRandomPhrase();
+
         // Bulles animées - 50% jaunes, 50% rouges
         for (let i = 0; i < 25; i++) {
             const bubble = document.createElement("div");

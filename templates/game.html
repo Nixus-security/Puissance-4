@@ -431,23 +431,31 @@
         tempToken.className = 'falling-token';
         tempToken.classList.add(isPlayer1 ? 'player1' : 'player2');
         
+        // Obtenir les coordonnées absolues de la cellule cible par rapport au viewport
         const rect = targetCell.getBoundingClientRect();
-        const boardRect = boardElement.getBoundingClientRect();
         
         const cellWidth = rect.width;
         const cellHeight = rect.height;
         
-        tempToken.style.left = (rect.left - boardRect.left) + 'px';
+        // Position horizontale : au centre de la cellule
+        tempToken.style.left = rect.left + 'px';
         tempToken.style.width = cellWidth + 'px';
         tempToken.style.height = cellHeight + 'px';
-        tempToken.style.top = '-70px';
         
-        boardElement.appendChild(tempToken);
+        // Position de départ : toujours depuis le haut de l'écran
+        // (au-dessus de la colonne où il doit tomber)
+        const startTop = Math.min(rect.top, boardElement.getBoundingClientRect().top) - 100;
+        tempToken.style.top = startTop + 'px';
         
+        // Ajouter au body pour échapper à la transformation du plateau
+        document.body.appendChild(tempToken);
+        
+        // Animation : le token tombe vers la cellule cible
         setTimeout(() => {
-          tempToken.style.top = (rect.top - boardRect.top) + 'px';
+          tempToken.style.top = rect.top + 'px';
         }, 50);
         
+        // Nettoyer après l'animation et ajouter la classe à la cellule
         setTimeout(() => {
           tempToken.remove();
           targetCell.classList.add(isPlayer1 ? 'player1' : 'player2');

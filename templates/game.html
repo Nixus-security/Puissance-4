@@ -4,10 +4,9 @@
   <meta charset="UTF-8">
   <title>Puissance 4 - Partie</title>
   <link rel="stylesheet" href="/static/style.css">
-  <link rel="stylesheet" href="/static/fullscreen.css">  <!-- ⭐ AJOUT PLEIN ÉCRAN -->
+  <link rel="stylesheet" href="/static/fullscreen.css">
   <style>
     body {
-      /* Fond animé avec motif diagonal comme index.html */
       background: #121212;
       background: linear-gradient(
         135deg,
@@ -97,10 +96,12 @@
       justify-content: center;
       margin: 0 auto 1.5rem;
       background: rgba(26, 26, 26, 0.8);
-      padding: 2rem;
-      border-radius: 20px;
+      padding: 0.5rem;
+      border-radius: 15px;
       border: 2px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      width: 530px;
+      height: 530px;
       max-width: 95vw;
       overflow-x: auto;
       position: relative;
@@ -153,7 +154,6 @@
       cursor: default;
     }
 
-    /* Token qui tombe */
     .falling-token {
       position: absolute;
       border-radius: 50%;
@@ -163,7 +163,6 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     }
 
-    /* Inverser le token qui tombe quand le plateau est inversé pour qu'il reste à l'endroit */
     .board.inverted .falling-token {
       transform: rotateX(180deg);
     }
@@ -270,11 +269,10 @@
       }
     }
 
-    /* Pour les petits écrans */
     @media (max-width: 768px) {
       .board {
         grid-template-columns: repeat(var(--cols), 50px);
-        padding: 1rem;
+        padding: 0.4rem;  /* Réduit pour tablette */
       }
 
       .cell {
@@ -286,7 +284,7 @@
     @media (max-width: 480px) {
       .board {
         grid-template-columns: repeat(var(--cols), 40px);
-        padding: 0.5rem;
+        padding: 0.3rem;  /* Réduit pour mobile */
         gap: 4px;
       }
 
@@ -334,7 +332,6 @@
   </form>
 
   <script>
-    // Récupérer les données depuis les attributs data
     const board = document.getElementById('board');
     const ROWS = parseInt(board.getAttribute('data-rows'));
     const COLS = parseInt(board.getAttribute('data-cols'));
@@ -342,29 +339,24 @@
     let isGravityInverted = board.getAttribute('data-gravity-inverted') === 'true';
     let isPlaying = false;
     
-    // Définir la variable CSS pour les colonnes
     document.documentElement.style.setProperty("--cols", COLS);
     
-    // Ajouter les événements de clic sur les cellules
     const cells = document.querySelectorAll('.cell');
     
     cells.forEach(cell => {
       cell.addEventListener('click', async function() {
-        if (isPlaying) return; // Empêcher les clics multiples
+        if (isPlaying) return;
         
         const col = parseInt(this.getAttribute('data-col'));
         const row = parseInt(this.getAttribute('data-row'));
         
-        // Vérifier si la cellule est déjà occupée
         if (this.classList.contains('player1') || this.classList.contains('player2')) {
           return;
         }
         
-        // Trouver la ligne de destination selon la gravité
         let targetRow = -1;
         
         if (!isGravityInverted) {
-          // Gravité normale : chercher du bas vers le haut
           for (let r = ROWS - 1; r >= 0; r--) {
             const targetCell = document.querySelector(`.cell[data-row="${r}"][data-col="${col}"]`);
             if (targetCell && !targetCell.classList.contains('player1') && !targetCell.classList.contains('player2')) {
@@ -373,7 +365,6 @@
             }
           }
         } else {
-          // Gravité inversée : chercher du haut vers le bas
           for (let r = 0; r < ROWS; r++) {
             const targetCell = document.querySelector(`.cell[data-row="${r}"][data-col="${col}"]`);
             if (targetCell && !targetCell.classList.contains('player1') && !targetCell.classList.contains('player2')) {
@@ -383,14 +374,12 @@
           }
         }
         
-        if (targetRow === -1) return; // Colonne pleine
+        if (targetRow === -1) return;
         
         isPlaying = true;
         
-        // Créer et animer le pion qui tombe
         await animateTokenDrop(col, targetRow, isGravityInverted);
         
-        // Envoyer la requête au serveur
         try {
           const response = await fetch('/play', {
             method: 'POST',
@@ -403,16 +392,11 @@
           const data = await response.json();
           
           if (response.ok) {
-            // Mettre à jour l'état de la gravité
             isGravityInverted = data.gravityInverted;
-            
-            // Mettre à jour le plateau
             updateBoard(data);
             
-            // Vérifier fin de partie
             if (data.finPartie) {
               setTimeout(() => {
-                // Vérifier si c'est une victoire ou égalité
                 if (data.message && data.message.includes('Victoire')) {
                   window.location.href = '/win';
                 } else if (data.message && data.message.includes('nul')) {
@@ -441,15 +425,12 @@
           return;
         }
         
-        // Déterminer le joueur actuel
         const isPlayer1 = document.querySelector('.player1-card').classList.contains('active');
         
-        // Créer le pion temporaire
         const tempToken = document.createElement('div');
         tempToken.className = 'falling-token';
         tempToken.classList.add(isPlayer1 ? 'player1' : 'player2');
         
-        // Positionner le pion
         const rect = targetCell.getBoundingClientRect();
         const boardRect = boardElement.getBoundingClientRect();
         
@@ -459,22 +440,16 @@
         tempToken.style.left = (rect.left - boardRect.left) + 'px';
         tempToken.style.width = cellWidth + 'px';
         tempToken.style.height = cellHeight + 'px';
-        
-        // Position initiale : toujours du haut
-        // La rotation du plateau gère l'effet visuel automatiquement
         tempToken.style.top = '-70px';
         
         boardElement.appendChild(tempToken);
         
-        // Animer la chute vers la destination
         setTimeout(() => {
           tempToken.style.top = (rect.top - boardRect.top) + 'px';
         }, 50);
         
-        // Nettoyer après l'animation
         setTimeout(() => {
           tempToken.remove();
-          // Ajouter la classe au vrai bouton
           targetCell.classList.add(isPlayer1 ? 'player1' : 'player2');
           resolve();
         }, 600);
@@ -482,27 +457,22 @@
     }
     
     function updateBoard(data) {
-      // Mettre à jour le compteur de tours
       currentTurnCount++;
       document.getElementById('turn-count').textContent = currentTurnCount;
       
-      // Mettre à jour l'affichage de la gravité inversée
       const gravityWarning = document.getElementById('gravity-warning');
       const boardElement = document.getElementById('board');
       
       if (data.gravityInverted) {
         gravityWarning.classList.remove('hide');
         gravityWarning.classList.add('show');
-        // Ajouter la classe inverted pour l'animation de rotation
         boardElement.classList.add('inverted');
       } else {
         gravityWarning.classList.remove('show');
         gravityWarning.classList.add('hide');
-        // Retirer la classe inverted pour remettre le plateau à l'endroit
         boardElement.classList.remove('inverted');
       }
       
-      // Mettre à jour le joueur actif
       const player1Card = document.querySelector('.player1-card');
       const player2Card = document.querySelector('.player2-card');
       
@@ -514,7 +484,6 @@
         player2Card.classList.add('active');
       }
       
-      // Mettre à jour toutes les cellules selon la grille
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
           const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
@@ -526,7 +495,6 @@
       }
     }
 
-    // Animation d'apparition des cellules au chargement
     document.querySelectorAll('.cell').forEach((cell, i) => {
       cell.style.opacity = 0;
       setTimeout(() => {
@@ -536,7 +504,7 @@
     });
   </script>
 
-  <script src="/static/fullscreen.js"></script>  
+  <script src="/static/fullscreen.js"></script>
 
 </body>
 </html>

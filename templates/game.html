@@ -70,6 +70,26 @@
       border: 2px solid rgba(255, 255, 255, 0.2);
       transition: all 0.3s ease;
       opacity: 0.6;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .player-photo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .player1-card .player-photo {
+      border-color: #ff6b6b;
+    }
+
+    .player2-card .player-photo {
+      border-color: #ffd93d;
     }
 
     .active {
@@ -100,8 +120,8 @@
       border-radius: 15px;
       border: 2px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-      width: 530px;
-      height: 530px;
+      width: min-content;
+      height: min-content;
       max-width: 95vw;
       overflow-x: auto;
       position: relative;
@@ -300,10 +320,20 @@
 
   <div class="players">
     <div class="player player1-card {{if eq .CurrentPlayer 1}}active{{end}}">
-      🔴 <span class="player1-name">{{.Player1Name}}</span>
+      {{if .Player1Photo}}
+        <img src="{{.Player1Photo}}" alt="{{.Player1Name}}" class="player-photo">
+      {{else}}
+        🔴
+      {{end}}
+      <span class="player1-name">{{.Player1Name}}</span>
     </div>
     <div class="player player2-card {{if eq .CurrentPlayer 2}}active{{end}}">
-      🟡 <span class="player2-name">{{.Player2Name}}</span>
+      {{if .Player2Photo}}
+        <img src="{{.Player2Photo}}" alt="{{.Player2Name}}" class="player-photo">
+      {{else}}
+        🟡
+      {{end}}
+      <span class="player2-name">{{.Player2Name}}</span>
     </div>
   </div>
 

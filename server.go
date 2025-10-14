@@ -29,6 +29,8 @@ type Game struct {
 	CurrentPlayer   int
 	Player1Name     string
 	Player2Name     string
+	Player1Photo    string // Photo en base64
+	Player2Photo    string // Photo en base64
 	Rows            int
 	Columns         int
 	Winner          int
@@ -42,7 +44,7 @@ type Game struct {
 var currentGame *Game
 
 // Initialise une nouvelle partie
-func NewGame(player1, player2, difficulty string) *Game {
+func NewGame(player1, player2, difficulty, photo1, photo2 string) *Game {
 	diff := difficulties[difficulty]
 	board := make([][]int, diff.Rows)
 	for i := range board {
@@ -54,6 +56,8 @@ func NewGame(player1, player2, difficulty string) *Game {
 		CurrentPlayer:   1,
 		Player1Name:     player1,
 		Player2Name:     player2,
+		Player1Photo:    photo1,
+		Player2Photo:    photo2,
 		Rows:            diff.Rows,
 		Columns:         diff.Columns,
 		Winner:          0,
@@ -191,6 +195,9 @@ func renderTemplate(w http.ResponseWriter, tmplName string, data interface{}) {
 			}
 			return result
 		},
+		"len": func(s string) int {
+			return len(s)
+		},
 	}
 
 	tmpl, err := template.New(tmplName).Funcs(funcMap).ParseFiles(tmplPath)
@@ -214,6 +221,7 @@ func main() {
 		http.StripPrefix("/static/",
 			http.FileServer(http.Dir("./static"))))
 
+	// Page splash
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			http.NotFound(w, r)
@@ -222,6 +230,7 @@ func main() {
 		renderTemplate(w, "splash.html", nil)
 	})
 
+	// Menu - saisie des noms et difficulté
 	mux.HandleFunc("/menu", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			renderTemplate(w, "index.html", difficulties)
@@ -238,9 +247,62 @@ func main() {
 				return
 			}
 
-			currentGame = NewGame(player1, player2, difficulty)
-			http.Redirect(w, r, "/game", http.StatusSeeOther)
+			// Rediriger vers la page photo avec les paramètres
+			http.Redirect(w, r, "/photo?player1="+player1+"&player2="+player2+"&difficulty="+difficulty, http.StatusSeeOther)
 		}
+	})
+
+	// Page de capture photo
+	mux.HandleFunc("/photo", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "photo.html", nil)
+	})
+
+	// Créer le jeu avec les photos
+	mux.HandleFunc("/create-game", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Lire le JSON
+		var gameData struct {
+			Player1    string `json:"player1"`
+			Player2    string `json:"player2"`
+			Difficulty string `json:"difficulty"`
+			Photo1     string `json:"photo1"`
+			Photo2     string `json:"photo2"`
+		}
+
+		err := json.NewDecoder(r.Body).Decode(&gameData)
+		if err != nil {
+			log.Println("❌ Erreur décodage JSON:", err)
+			http.Error(w, "Erreur parsing JSON", http.StatusBadRequest)
+			return
+		}
+
+		// Debug
+		log.Println("📥 Données reçues:")
+		log.Println("  Player1:", gameData.Player1)
+		log.Println("  Player2:", gameData.Player2)
+		log.Println("  Difficulty:", gameData.Difficulty)
+		log.Println("  Photo1 length:", len(gameData.Photo1))
+		log.Println("  Photo2 length:", len(gameData.Photo2))
+
+		if gameData.Player1 == "" || gameData.Player2 == "" || gameData.Difficulty == "" {
+			log.Println("❌ Paramètres manquants")
+			http.Error(w, "Paramètres manquants", http.StatusBadRequest)
+			return
+		}
+
+		currentGame = NewGame(gameData.Player1, gameData.Player2, gameData.Difficulty, gameData.Photo1, gameData.Photo2)
+
+		log.Println("✅ Game créé avec photos:")
+		log.Println("  Photo1 stockée:", len(currentGame.Player1Photo), "caractères")
+		log.Println("  Photo2 stockée:", len(currentGame.Player2Photo), "caractères")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 	})
 
 	// Page du jeu
@@ -249,6 +311,9 @@ func main() {
 			http.Redirect(w, r, "/menu", http.StatusSeeOther)
 			return
 		}
+		log.Println("📺 Affichage game.html")
+		log.Println("  Photo1:", len(currentGame.Player1Photo), "caractères")
+		log.Println("  Photo2:", len(currentGame.Player2Photo), "caractères")
 		renderTemplate(w, "game.html", currentGame)
 	})
 
@@ -259,7 +324,7 @@ func main() {
 			return
 		}
 
-		// ---  Cas JSON (JavaScript Fetch) ---
+		// Cas JSON (JavaScript Fetch)
 		if r.Header.Get("Content-Type") == "application/json" {
 			var payload struct {
 				Col int `json:"col"`
@@ -297,7 +362,7 @@ func main() {
 			return
 		}
 
-		// ---  Cas HTML (formulaire classique) ---
+		// Cas HTML (formulaire classique)
 		columnStr := r.FormValue("column")
 		column, err := strconv.Atoi(columnStr)
 		if err != nil {
@@ -321,6 +386,13 @@ func main() {
 		if currentGame == nil {
 			http.Redirect(w, r, "/menu", http.StatusSeeOther)
 			return
+		}
+		log.Println("🏆 Affichage win.html")
+		log.Println("  Winner:", currentGame.Winner)
+		if currentGame.Winner == 1 {
+			log.Println("  Photo gagnant:", len(currentGame.Player1Photo), "caractères")
+		} else {
+			log.Println("  Photo gagnant:", len(currentGame.Player2Photo), "caractères")
 		}
 		renderTemplate(w, "win.html", currentGame)
 	})
@@ -350,4 +422,14 @@ func (g *Game) PlayerName(id int) string {
 		return g.Player2Name
 	}
 	return "?"
+}
+
+// Méthode pour obtenir la photo d'un joueur
+func (g *Game) PlayerPhoto(id int) string {
+	if id == 1 {
+		return g.Player1Photo
+	} else if id == 2 {
+		return g.Player2Photo
+	}
+	return ""
 }

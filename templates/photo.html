@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photos des joueurs 📸</title>
+  <link rel="stylesheet" href="/static/fullscreen.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #121212;
+      background: linear-gradient(
+        135deg,
+        #121212 25%,
+        #1a1a1a 25%,
+        #1a1a1a 50%,
+        #121212 50%,
+        #121212 75%,
+        #1a1a1a 75%,
+        #1a1a1a
+      );
+      background-size: 40px 40px;
+      animation: move 4s linear infinite;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #fff;
+      padding: 2rem;
+    }
+
+    @keyframes move {
+      0% { background-position: 0 0; }
+      100% { background-position: 40px 40px; }
+    }
+
+    .container {
+      background: rgba(26, 26, 26, 0.9);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 800px;
+      width: 100%;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .player-name {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+      color: #ffd93d;
+    }
+
+    .camera-container {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto 2rem;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    #video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    #canvas {
+      display: none;
+    }
+
+    .preview-container {
+      display: none;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .preview-container.show {
+      display: block;
+    }
+
+    .preview-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid #ffd93d;
+      box-shadow: 0 5px 20px rgba(255, 217, 61, 0.5);
+      margin: 0 auto;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #51cf66, #37b24d);
+      color: #fff;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(81, 207, 102, 0.5);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ff6b6b, #c92a2a);
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 107, 107, 0.5);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status {
+      text-align: center;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      font-size: 1.1rem;
+    }
+
+    .status.info {
+      background: rgba(51, 154, 240, 0.2);
+      border: 1px solid rgba(51, 154, 240, 0.5);
+    }
+
+    .status.success {
+      background: rgba(81, 207, 102, 0.2);
+      border: 1px solid rgba(81, 207, 102, 0.5);
+    }
+
+    .progress {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .countdown {
+      font-size: 5rem;
+      font-weight: bold;
+      color: #ffd93d;
+      text-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      .player-name { font-size: 1.5rem; }
+      .btn { padding: 0.8rem 1.5rem; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📸 Photos des Joueurs</h1>
+    <p class="player-name" id="current-player-name"></p>
+
+    <div class="status info" id="status">
+      Cliquez sur "Activer la caméra" pour commencer
+    </div>
+
+    <div class="camera-container" id="camera-container" style="display: none;">
+      <video id="video" autoplay playsinline></video>
+      <div id="countdown-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none;">
+        <div class="countdown" id="countdown">3</div>
+      </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <div class="preview-container" id="preview-player1">
+      <h3>🔴 Joueur 1</h3>
+      <img id="preview-img-1" class="preview-image" src="" alt="Photo Joueur 1">
+      <p id="player1-name"></p>
+    </div>
+
+    <div class="preview-container" id="preview-player2">
+      <h3>🟡 Joueur 2</h3>
+      <img id="preview-img-2" class="preview-image" src="" alt="Photo Joueur 2">
+      <p id="player2-name"></p>
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-primary" id="btn-start-camera" onclick="startCamera()">
+        📷 Activer la caméra
+      </button>
+      <button class="btn btn-success" id="btn-capture" onclick="capturePhoto()" style="display: none;">
+        📸 Prendre la photo
+      </button>
+      <button class="btn btn-danger" id="btn-retake" onclick="retakePhoto()" style="display: none;">
+        🔄 Reprendre
+      </button>
+      <button class="btn btn-success" id="btn-next" onclick="nextPlayer()" style="display: none;">
+        ➡️ Joueur suivant
+      </button>
+      <button class="btn btn-success" id="btn-start-game" onclick="startGame()" style="display: none;">
+        🎮 Commencer le jeu
+      </button>
+    </div>
+
+    <div class="progress">
+      <p><span id="progress-text">Étape 1/2</span></p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let video = document.getElementById('video');
+    let canvas = document.getElementById('canvas');
+    let stream = null;
+    let currentPlayer = 1;
+    let photo1 = null;
+    let photo2 = null;
+    
+    // Récupérer les noms des joueurs depuis l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const player1Name = urlParams.get('player1') || 'Joueur 1';
+    const player2Name = urlParams.get('player2') || 'Joueur 2';
+    const difficulty = urlParams.get('difficulty') || 'easy';
+
+    document.getElementById('current-player-name').textContent = `🔴 ${player1Name}`;
+    document.getElementById('player1-name').textContent = player1Name;
+    document.getElementById('player2-name').textContent = player2Name;
+
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            facingMode: 'user'
+          } 
+        });
+        
+        video.srcObject = stream;
+        
+        document.getElementById('camera-container').style.display = 'block';
+        document.getElementById('btn-start-camera').style.display = 'none';
+        document.getElementById('btn-capture').style.display = 'inline-block';
+        document.getElementById('status').textContent = '✅ Caméra activée ! Positionnez-vous et cliquez sur "Prendre la photo"';
+        document.getElementById('status').className = 'status success';
+        
+      } catch (err) {
+        console.error('Erreur caméra:', err);
+        document.getElementById('status').textContent = '❌ Impossible d\'accéder à la caméra. Vérifiez les permissions.';
+        document.getElementById('status').className = 'status info';
+      }
+    }
+
+    function capturePhoto() {
+      // Countdown de 3 secondes
+      let count = 3;
+      const countdownOverlay = document.getElementById('countdown-overlay');
+      const countdownText = document.getElementById('countdown');
+      
+      countdownOverlay.style.display = 'block';
+      document.getElementById('btn-capture').disabled = true;
+      
+      const countdownInterval = setInterval(() => {
+        count--;
+        countdownText.textContent = count;
+        
+        if (count === 0) {
+          clearInterval(countdownInterval);
+          countdownOverlay.style.display = 'none';
+          
+          // Prendre la photo
+          takeSnapshot();
+        }
+      }, 1000);
+    }
+
+    function takeSnapshot() {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Réduire la qualité pour diminuer la taille
+      const photoData = canvas.toDataURL('image/jpeg', 0.6);
+      
+      console.log('📸 Photo capturée, taille:', photoData.length, 'caractères');
+      
+      if (currentPlayer === 1) {
+        photo1 = photoData;
+        document.getElementById('preview-img-1').src = photoData;
+        document.getElementById('preview-player1').classList.add('show');
+      } else {
+        photo2 = photoData;
+        document.getElementById('preview-img-2').src = photoData;
+        document.getElementById('preview-player2').classList.add('show');
+      }
+      
+      // Arrêter la caméra
+      stopCamera();
+      
+      // Changer l'interface
+      document.getElementById('camera-container').style.display = 'none';
+      document.getElementById('btn-capture').style.display = 'none';
+      document.getElementById('btn-capture').disabled = false;
+      document.getElementById('btn-retake').style.display = 'inline-block';
+      
+      if (currentPlayer === 1) {
+        document.getElementById('btn-next').style.display = 'inline-block';
+        document.getElementById('status').textContent = '✅ Photo du Joueur 1 capturée !';
+      } else {
+        document.getElementById('btn-start-game').style.display = 'inline-block';
+        document.getElementById('status').textContent = '✅ Photo du Joueur 2 capturée ! Prêts à jouer ?';
+      }
+    }
+
+    function retakePhoto() {
+      document.getElementById('btn-retake').style.display = 'none';
+      document.getElementById('btn-next').style.display = 'none';
+      document.getElementById('btn-start-game').style.display = 'none';
+      document.getElementById('btn-start-camera').style.display = 'inline-block';
+      
+      if (currentPlayer === 1) {
+        photo1 = null;
+        document.getElementById('preview-player1').classList.remove('show');
+      } else {
+        photo2 = null;
+        document.getElementById('preview-player2').classList.remove('show');
+      }
+      
+      document.getElementById('status').textContent = 'Cliquez sur "Activer la caméra" pour reprendre la photo';
+    }
+
+    function nextPlayer() {
+      currentPlayer = 2;
+      document.getElementById('current-player-name').textContent = `🟡 ${player2Name}`;
+      document.getElementById('btn-retake').style.display = 'none';
+      document.getElementById('btn-next').style.display = 'none';
+      document.getElementById('btn-start-camera').style.display = 'inline-block';
+      document.getElementById('status').textContent = 'Au tour du Joueur 2 !';
+      document.getElementById('status').className = 'status info';
+      
+      // Mettre à jour la barre de progression
+      document.getElementById('progress-text').textContent = 'Étape 2/2';
+      document.getElementById('progress-fill').style.width = '100%';
+    }
+
+    async function startGame() {
+      console.log('🎮 Tentative de démarrage du jeu...');
+      document.getElementById('status').textContent = '⏳ Démarrage de la partie...';
+      document.getElementById('status').className = 'status info';
+      document.getElementById('btn-start-game').disabled = true;
+      
+      // Vérifier que les photos sont bien présentes
+      if (!photo1 || !photo2) {
+        console.error('❌ Photos manquantes!');
+        document.getElementById('status').textContent = '❌ Les deux photos doivent être prises';
+        document.getElementById('status').className = 'status info';
+        document.getElementById('btn-start-game').disabled = false;
+        return;
+      }
+      
+      // Préparer les données en JSON
+      const gameData = {
+        player1: player1Name,
+        player2: player2Name,
+        difficulty: difficulty,
+        photo1: photo1,
+        photo2: photo2
+      };
+      
+      console.log('📤 Envoi des données:', {
+        player1: player1Name,
+        player2: player2Name,
+        difficulty: difficulty,
+        photo1_length: photo1 ? photo1.length : 0,
+        photo2_length: photo2 ? photo2.length : 0
+      });
+      
+      try {
+        const response = await fetch('/create-game', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(gameData)
+        });
+        
+        console.log('📥 Réponse du serveur:', response.status, response.statusText);
+        
+        if (response.ok) {
+          console.log('✅ Partie créée avec succès');
+          const result = await response.json();
+          console.log('Résultat:', result);
+          
+          // Redirection vers le jeu
+          window.location.href = '/game';
+        } else {
+          const errorText = await response.text();
+          console.error('❌ Erreur serveur:', response.status, errorText);
+          
+          document.getElementById('status').textContent = `❌ Erreur lors de la création de la partie (${response.status})`;
+          document.getElementById('status').className = 'status info';
+          document.getElementById('btn-start-game').disabled = false;
+          
+          // Afficher l'erreur détaillée
+          alert(`Erreur ${response.status}: ${errorText}`);
+        }
+      } catch (err) {
+        console.error('❌ Erreur réseau:', err);
+        document.getElementById('status').textContent = '❌ Erreur de connexion';
+        document.getElementById('status').className = 'status info';
+        document.getElementById('btn-start-game').disabled = false;
+        
+        alert('Erreur de connexion: ' + err.message);
+      }
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+      }
+    }
+
+    // Nettoyer la caméra si on quitte la page
+    window.addEventListener('beforeunload', stopCamera);
+
+    // Mettre à jour la barre de progression initiale
+    document.getElementById('progress-fill').style.width = '50%';
+  </script>
+
+  <script src="/static/fullscreen.js"></script>
+</body>
+</html>

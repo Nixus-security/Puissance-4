@@ -107,24 +107,26 @@
             50% { transform: translateY(-8px); }
         }
 
-        .winner-name {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 1.5rem 0;
-            background: linear-gradient(135deg, #ff6b6b, #ffd93d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 3s ease-in-out infinite;
+        .winner-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 2rem auto;
+            animation: winnerPulse 1.5s infinite;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
-        @keyframes shimmer {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
+        .winner-photo.player1 {
+            border: 8px solid #ff6b6b;
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.6),
+                        0 0 60px rgba(255, 107, 107, 0.4);
+        }
+
+        .winner-photo.player2 {
+            border: 8px solid #ffd93d;
+            box-shadow: 0 10px 40px rgba(255, 217, 61, 0.6),
+                        0 0 60px rgba(255, 217, 61, 0.4);
         }
 
         .winner-token {
@@ -158,6 +160,26 @@
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
+        }
+
+        .winner-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 1.5rem 0;
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
         }
 
         .game-info {
@@ -306,6 +328,11 @@
                 font-size: 1.8rem;
             }
 
+            .winner-photo {
+                width: 150px;
+                height: 150px;
+            }
+
             .action-buttons {
                 flex-direction: column;
             }
@@ -320,7 +347,19 @@
     <div class="winner-container">
         <h1><span class="trophy">🏆</span> VICTOIRE ! <span class="trophy">🏆</span></h1>
         
-        <div class="winner-token {{if eq .Winner 1}}player1{{else}}player2{{end}}"></div>
+        {{if eq .Winner 1}}
+            {{if .Player1Photo}}
+                <img src="{{.Player1Photo}}" alt="{{.Player1Name}}" class="winner-photo player1">
+            {{else}}
+                <div class="winner-token player1"></div>
+            {{end}}
+        {{else}}
+            {{if .Player2Photo}}
+                <img src="{{.Player2Photo}}" alt="{{.Player2Name}}" class="winner-photo player2">
+            {{else}}
+                <div class="winner-token player2"></div>
+            {{end}}
+        {{end}}
         
         <div class="winner-name">
             {{if eq .Winner 1}}{{.Player1Name}}{{else}}{{.Player2Name}}{{end}}
@@ -334,16 +373,15 @@
 
         <div class="action-buttons">
             <form action="/restart" method="get" style="display: inline;">
-                <button class="custom-button" type="submit"> REJOUER</button>
+                <button class="custom-button" type="submit">🔁 REJOUER</button>
             </form>
             <form action="/menu" method="get" style="display: inline;">
-                <button class="custom-button" type="submit"> MENU PRINCIPAL</button>
+                <button class="custom-button" type="submit">🏠 MENU PRINCIPAL</button>
             </form>
         </div>
     </div>
 
     <script>
-        // Liste des phrases aléatoires
         const randomPhrases = [
             "Tié un Tigre",
             "Tié le sang abris",
@@ -352,17 +390,14 @@
             "M la présidente dégâts dégâts"
         ];
 
-        // Fonction pour afficher une phrase aléatoire
         function displayRandomPhrase() {
             const randomIndex = Math.floor(Math.random() * randomPhrases.length);
             const phraseElement = document.getElementById('randomPhrase');
             phraseElement.textContent = randomPhrases[randomIndex];
         }
 
-        // Afficher la phrase au chargement
         displayRandomPhrase();
 
-        // Bulles animées - 50% jaunes, 50% rouges
         for (let i = 0; i < 25; i++) {
             const bubble = document.createElement("div");
             bubble.classList.add("bubble");
@@ -379,37 +414,6 @@
             bubble.style.animationDelay = `${Math.random() * 3}s`;
             document.body.appendChild(bubble);
         }
-
-        // Confettis en boucle
-        function launchConfetti() {
-            const duration = 3 * 1000;
-            const end = Date.now() + duration;
-
-            (function frame() {
-                confetti({
-                    particleCount: 5,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: ['#ff6b6b', '#ffd93d', '#ffffff']
-                });
-                confetti({
-                    particleCount: 5,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: ['#ff6b6b', '#ffd93d', '#ffffff']
-                });
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            })();
-        }
-
-        // Lancer les confettis au chargement et toutes les 5 secondes
-        launchConfetti();
-        setInterval(launchConfetti, 5000);
     </script>
     <script src="/static/fullscreen.js"></script>
 </body>

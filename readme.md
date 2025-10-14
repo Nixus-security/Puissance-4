@@ -60,6 +60,26 @@ open http://localhost:8000
 
 ---
 
+## 🎨 Design System
+
+Une documentation complète du design est accessible via :
+
+```
+http://localhost:8000/design
+```
+
+Cette page contient :
+- 🎨 **Palette de couleurs** complète avec codes hex
+- ✍️ **Typographie** (Georgia pour titres, Poppins pour corps)
+- 🧩 **Composants** (boutons, jetons, cartes glassmorphism)
+- ✨ **Animations** (float, pulse, rise, drop) avec démos live
+- 📱 **Tous les écrans** du jeu avec leurs routes
+- 🛠️ **Stack technique** documentée
+
+Parfait pour comprendre les choix de design et les réutiliser !
+
+---
+
 ## 📁 Structure du projet
 
 ```
@@ -73,7 +93,8 @@ Puissance-4/
 │   ├── photo.html      # Capture photos
 │   ├── game.html       # Plateau de jeu
 │   ├── win.html        # Écran victoire
-│   └── draw.html       # Écran égalité
+│   ├── draw.html       # Écran égalité
+│   └── design.html     # 🆕 Design System & Documentation
 │
 └── static/             # Assets frontend
     ├── style.css       # Styles de base
@@ -115,6 +136,7 @@ POST /play       → Jouer un coup
 GET  /win        → Victoire
 GET  /draw       → Égalité
 GET  /restart    → Recommencer
+GET  /design     → 🆕 Documentation design
 ```
 
 ### Logique du jeu
@@ -141,6 +163,14 @@ var difficulties = map[string]GameDifficulty{
     "easy":   {Name: "Easy", Rows: 6, Columns: 7},
     "custom": {Name: "Custom", Rows: 8, Columns: 10}, // Ajouter
 }
+```
+
+### Ajouter la route design (si pas encore fait)
+```go
+// Dans server.go, fonction main()
+mux.HandleFunc("/design", func(w http.ResponseWriter, r *http.Request) {
+    renderTemplate(w, "design.html", nil)
+})
 ```
 
 ---
@@ -171,7 +201,7 @@ Cmd + Shift + R  (Mac)
 ## 📊 Statistiques du projet
 
 - **Langage** : 100% Go (backend)
-- **Lignes de code** : ~500 Go, ~1000 HTML/CSS/JS
+- **Lignes de code** : ~500 Go, ~1200 HTML/CSS/JS
 - **Dépendances** : 0 (packages standard uniquement)
 - **Performance** : <1ms par coup
 - **Taille** : ~50 KB (binaire compilé)
@@ -187,6 +217,7 @@ Cmd + Shift + R  (Mac)
 - [ ] Thèmes personnalisables
 - [ ] Historique des parties
 - [ ] Classement des joueurs
+- [x] Documentation design complète
 
 ---
 
@@ -208,6 +239,7 @@ Développé dans le cadre du projet Power4 Web
 - Design inspiré des interfaces modernes
 - Animations CSS natives
 - Go standard library
+- Documentation design intégrée
 
 ---
 
@@ -234,6 +266,9 @@ Plateau interactif avec affichage des photos des joueurs
 
 ### Gravité inversée
 Effet visuel unique tous les 5 tours
+
+### 🆕 Design System
+Documentation complète des couleurs, composants et animations
 
 ---
 

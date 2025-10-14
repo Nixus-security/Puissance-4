@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design System - Puissance 4</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 0;
+      background: linear-gradient(135deg, #121212, #1a1a1a);
+      border-radius: 20px;
+      margin-bottom: 3rem;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      font-family: "Georgia", serif;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    h1 .red {
+      color: #ff6b6b;
+    }
+
+    h1 .yellow {
+      color: #ffd93d;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin: 3rem 0 1.5rem;
+      color: #ffd93d;
+      border-bottom: 2px solid rgba(255, 217, 61, 0.3);
+      padding-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      margin: 2rem 0 1rem;
+      color: #fff;
+    }
+
+    .section {
+      background: rgba(26, 26, 26, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Palette de couleurs */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .color-card {
+      text-align: center;
+    }
+
+    .color-swatch {
+      height: 120px;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .color-name {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    .color-code {
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Typographie */
+    .typo-example {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .typo-example p {
+      margin-bottom: 0.5rem;
+    }
+
+    .typo-code {
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: rgba(255, 217, 61, 0.8);
+    }
+
+    /* Composants */
+    .component-grid {
+      display: grid;
+      gap: 2rem;
+      margin-top: 1.5rem;
+    }
+
+    .component-card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .component-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .component-desc {
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 1rem;
+    }
+
+    /* Bouton */
+    .btn-demo {
+      background-color: #121212;
+      color: #ffffff;
+      border: none;
+      padding: 15px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 30px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-demo:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Jetons */
+    .token-demo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .token-player1 {
+      background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+    }
+
+    .token-player2 {
+      background: radial-gradient(circle at 30% 30%, #ffd93d, #f9ca24);
+    }
+
+    /* Carte glassmorphism */
+    .glass-card {
+      background: rgba(26, 26, 26, 0.8);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Animations */
+    .animation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .animation-card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .animation-name {
+      font-weight: 600;
+      color: #ffd93d;
+      margin-bottom: 0.5rem;
+    }
+
+    .animation-desc {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .animation-code {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: rgba(255, 217, 61, 0.6);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.5rem;
+      border-radius: 5px;
+      margin-top: 0.5rem;
+    }
+
+    /* Écrans */
+    .screens-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 1.5rem;
+    }
+
+    .screen-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .screen-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(255, 217, 61, 0.2);
+    }
+
+    .screen-preview {
+      aspect-ratio: 16/10;
+      background: #121212;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .screen-info {
+      padding: 1.5rem;
+    }
+
+    .screen-title {
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .screen-desc {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+
+    .screen-route {
+      font-family: monospace;
+      background: rgba(255, 217, 61, 0.1);
+      color: #ffd93d;
+      padding: 0.25rem 0.5rem;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      display: inline-block;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .color-grid,
+      .screens-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Animation démo */
+    @keyframes float-demo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .float-example {
+      animation: float-demo 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-demo {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .pulse-example {
+      animation: pulse-demo 1.5s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span class="red">PUISSANCE</span> <span class="yellow">4</span></h1>
+      <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem; margin-top: 1rem;">
+        Design System & Documentation
+      </p>
+    </header>
+
+    <!-- Palette de couleurs -->
+    <section class="section">
+      <h2>🎨 Palette de couleurs</h2>
+      <div class="color-grid">
+        <div class="color-card">
+          <div class="color-swatch" style="background: #ff6b6b;"></div>
+          <div class="color-name">Rouge Joueur 1</div>
+          <div class="color-code">#ff6b6b</div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background: #ffd93d;"></div>
+          <div class="color-name">Jaune Joueur 2</div>
+          <div class="color-code">#ffd93d</div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background: #121212;"></div>
+          <div class="color-name">Fond principal</div>
+          <div class="color-code">#121212</div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background: #1a1a1a;"></div>
+          <div class="color-name">Fond alternatif</div>
+          <div class="color-code">#1a1a1a</div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+          <div class="color-name">Gradient Violet</div>
+          <div class="color-code">667eea → 764ba2</div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d);"></div>
+          <div class="color-name">Gradient Rouge-Jaune</div>
+          <div class="color-code">ff6b6b → ffd93d</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Typographie -->
+    <section class="section">
+      <h2>✍️ Typographie</h2>
+      
+      <div class="typo-example">
+        <h1 style="font-family: Georgia, serif; font-size: 3rem; margin-bottom: 0.5rem;">
+          <span style="color: #ff6b6b;">PUISSANCE</span> <span style="color: #ffd93d;">4</span>
+        </h1>
+        <p class="typo-code">Georgia, serif - 3rem - Bold</p>
+        <p style="color: rgba(255, 255, 255, 0.6); margin-top: 0.5rem;">
+          Utilisé pour le titre principal du jeu
+        </p>
+      </div>
+
+      <div class="typo-example">
+        <h2 style="font-family: Poppins, sans-serif; font-size: 2rem; margin-bottom: 0.5rem;">
+          Titre secondaire
+        </h2>
+        <p class="typo-code">Poppins, sans-serif - 2rem - Bold</p>
+        <p style="color: rgba(255, 255, 255, 0.6); margin-top: 0.5rem;">
+          Utilisé pour les sous-titres et sections
+        </p>
+      </div>
+
+      <div class="typo-example">
+        <p style="font-family: Poppins, sans-serif; font-size: 1rem; margin-bottom: 0.5rem;">
+          Texte standard pour les descriptions et le contenu principal
+        </p>
+        <p class="typo-code">Poppins, sans-serif - 1rem - Regular</p>
+      </div>
+    </section>
+
+    <!-- Composants -->
+    <section class="section">
+      <h2>🧩 Composants</h2>
+
+      <div class="component-grid">
+        <!-- Boutons -->
+        <div class="component-card">
+          <h3>Boutons</h3>
+          <div class="component-preview">
+            <button class="btn-demo">Bouton primaire</button>
+            <button class="btn-demo" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+              Bouton gradient
+            </button>
+          </div>
+          <div class="component-desc">
+            Boutons avec effet hover inversé et ombre portée. Utilisés pour toutes les actions principales.
+          </div>
+        </div>
+
+        <!-- Jetons -->
+        <div class="component-card">
+          <h3>Jetons des joueurs</h3>
+          <div class="component-preview">
+            <div class="token-demo token-player1"></div>
+            <div class="token-demo token-player2"></div>
+          </div>
+          <div class="component-desc">
+            Jetons circulaires avec gradient radial pour créer un effet 3D. Rouge pour Joueur 1, Jaune pour Joueur 2.
+          </div>
+        </div>
+
+        <!-- Carte glassmorphism -->
+        <div class="component-card">
+          <h3>Carte Glassmorphism</h3>
+          <div class="component-preview" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+            <div class="glass-card" style="max-width: 300px;">
+              <p style="color: #fff;">Carte avec effet glassmorphism</p>
+              <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; margin-top: 0.5rem;">
+                backdrop-blur + bg-opacity + border semi-transparent
+              </p>
+            </div>
+          </div>
+          <div class="component-desc">
+            Cartes avec fond semi-transparent, flou d'arrière-plan et bordure lumineuse. Utilisées pour tous les conteneurs principaux.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Animations -->
+    <section class="section">
+      <h2>✨ Animations</h2>
+      <div class="animation-grid">
+        <div class="animation-card">
+          <div class="animation-name">Float (Flottement)</div>
+          <div class="component-preview">
+            <div class="token-demo token-player1 float-example"></div>
+          </div>
+          <div class="animation-desc">Mouvement vertical doux</div>
+          <div class="animation-code">translateY: 0 → -15px → 0</div>
+        </div>
+
+        <div class="animation-card">
+          <div class="animation-name">Pulse (Pulsation)</div>
+          <div class="component-preview">
+            <div class="token-demo token-player2 pulse-example"></div>
+          </div>
+          <div class="animation-desc">Effet de respiration</div>
+          <div class="animation-code">scale: 1 → 1.1 → 1</div>
+        </div>
+
+        <div class="animation-card">
+          <div class="animation-name">Rise (Montée)</div>
+          <div class="animation-desc">Bulles montant vers le haut</div>
+          <div class="animation-code">translateY: 0 → -120vh</div>
+        </div>
+
+        <div class="animation-card">
+          <div class="animation-name">Drop (Chute)</div>
+          <div class="animation-desc">Chute des jetons dans le plateau</div>
+          <div class="animation-code">translateY: -300px → 0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Écrans du jeu -->
+    <section class="section">
+      <h2>📱 Écrans du jeu</h2>
+      <div class="screens-grid">
+        <div class="screen-card">
+          <div class="screen-preview">🚀</div>
+          <div class="screen-info">
+            <div class="screen-title">Splash Screen</div>
+            <div class="screen-desc">
+              Écran de démarrage avec activation du plein écran et animations de bulles
+            </div>
+            <code class="screen-route">GET /</code>
+          </div>
+        </div>
+
+        <div class="screen-card">
+          <div class="screen-preview">🏠</div>
+          <div class="screen-info">
+            <div class="screen-title">Menu Principal</div>
+            <div class="screen-desc">
+              Saisie des noms et sélection de difficulté avec radio buttons animés
+            </div>
+            <code class="screen-route">GET /menu</code>
+          </div>
+        </div>
+
+        <div class="screen-card">
+          <div class="screen-preview">📸</div>
+          <div class="screen-info">
+            <div class="screen-title">Capture Photos</div>
+            <div class="screen-desc">
+              Capture webcam des deux joueurs avec countdown et prévisualisation
+            </div>
+            <code class="screen-route">GET /photo</code>
+          </div>
+        </div>
+
+        <div class="screen-card">
+          <div class="screen-preview">🎯</div>
+          <div class="screen-info">
+            <div class="screen-title">Plateau de Jeu</div>
+            <div class="screen-desc">
+              Grille interactive avec gravité inversée tous les 5 tours
+            </div>
+            <code class="screen-route">GET /game</code>
+          </div>
+        </div>
+
+        <div class="screen-card">
+          <div class="screen-preview">🏆</div>
+          <div class="screen-info">
+            <div class="screen-title">Victoire</div>
+            <div class="screen-desc">
+              Célébration avec confettis, photo du gagnant et phrase aléatoire
+            </div>
+            <code class="screen-route">GET /win</code>
+          </div>
+        </div>
+
+        <div class="screen-card">
+          <div class="screen-preview">🤝</div>
+          <div class="screen-info">
+            <div class="screen-title">Égalité</div>
+            <div class="screen-desc">
+              Affichage des deux joueurs avec animation de jetons
+            </div>
+            <code class="screen-route">GET /draw</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technologies -->
+    <section class="section">
+      <h2>🛠️ Stack technique</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 10px;">
+          <h3 style="color: #ffd93d; margin-bottom: 1rem;">Backend</h3>
+          <ul style="list-style: none; color: rgba(255, 255, 255, 0.7);">
+            <li>✓ Go 1.25</li>
+            <li>✓ net/http standard</li>
+            <li>✓ Templates Go</li>
+          </ul>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 10px;">
+          <h3 style="color: #ffd93d; margin-bottom: 1rem;">Frontend</h3>
+          <ul style="list-style: none; color: rgba(255, 255, 255, 0.7);">
+            <li>✓ HTML5</li>
+            <li>✓ CSS3 natif</li>
+            <li>✓ JavaScript vanilla</li>
+          </ul>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 10px;">
+          <h3 style="color: #ffd93d; margin-bottom: 1rem;">Design</h3>
+          <ul style="list-style: none; color: rgba(255, 255, 255, 0.7);">
+            <li>✓ Glassmorphism</li>
+            <li>✓ Animations CSS</li>
+            <li>✓ Responsive design</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 3rem 0; color: rgba(255, 255, 255, 0.5);">
+      <p>© 2025 - Puissance 4 by Anthony Nagul</p>
+      <p style="margin-top: 0.5rem; font-size: 0.9rem;">Design System Documentation</p>
+    </footer>
+  </div>
+</body>
+</html>

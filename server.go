@@ -410,6 +410,11 @@ func main() {
 		http.Redirect(w, r, "/menu", http.StatusSeeOther)
 	})
 
+	// Documentation design
+	mux.HandleFunc("/design", func(w http.ResponseWriter, r *http.Request) {
+    renderTemplate(w, "design.html", nil)
+	})
+
 	log.Println("✅ Serveur Power4 démarré sur http://localhost:8000")
 	http.ListenAndServe(":8000", mux)
 }
@@ -423,6 +428,7 @@ func (g *Game) PlayerName(id int) string {
 	}
 	return "?"
 }
+
 
 // Méthode pour obtenir la photo d'un joueur
 func (g *Game) PlayerPhoto(id int) template.URL {

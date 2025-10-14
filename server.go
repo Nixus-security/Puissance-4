@@ -29,8 +29,8 @@ type Game struct {
 	CurrentPlayer   int
 	Player1Name     string
 	Player2Name     string
-	Player1Photo    string // Photo en base64
-	Player2Photo    string // Photo en base64
+	Player1Photo    template.URL // ✅ Changé de string à template.URL
+	Player2Photo    template.URL // ✅ Changé de string à template.URL
 	Rows            int
 	Columns         int
 	Winner          int
@@ -56,8 +56,8 @@ func NewGame(player1, player2, difficulty, photo1, photo2 string) *Game {
 		CurrentPlayer:   1,
 		Player1Name:     player1,
 		Player2Name:     player2,
-		Player1Photo:    photo1,
-		Player2Photo:    photo2,
+		Player1Photo:    template.URL(photo1), // ✅ Conversion en template.URL
+		Player2Photo:    template.URL(photo2), // ✅ Conversion en template.URL
 		Rows:            diff.Rows,
 		Columns:         diff.Columns,
 		Winner:          0,
@@ -425,7 +425,7 @@ func (g *Game) PlayerName(id int) string {
 }
 
 // Méthode pour obtenir la photo d'un joueur
-func (g *Game) PlayerPhoto(id int) string {
+func (g *Game) PlayerPhoto(id int) template.URL {
 	if id == 1 {
 		return g.Player1Photo
 	} else if id == 2 {

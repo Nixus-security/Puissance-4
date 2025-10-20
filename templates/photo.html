@@ -157,6 +157,16 @@
       box-shadow: 0 8px 20px rgba(255, 107, 107, 0.5);
     }
 
+    .btn-secondary {
+      background: linear-gradient(135deg, #868e96, #495057);
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(134, 142, 150, 0.5);
+    }
+
     .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
@@ -178,6 +188,11 @@
     .status.success {
       background: rgba(81, 207, 102, 0.2);
       border: 1px solid rgba(81, 207, 102, 0.5);
+    }
+
+    .status.warning {
+      background: rgba(255, 193, 7, 0.2);
+      border: 1px solid rgba(255, 193, 7, 0.5);
     }
 
     .progress {
@@ -214,6 +229,17 @@
       50% { transform: scale(1.1); }
     }
 
+    .skip-notice {
+      text-align: center;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.95rem;
+    }
+
     @media (max-width: 768px) {
       h1 { font-size: 2rem; }
       .player-name { font-size: 1.5rem; }
@@ -227,7 +253,7 @@
     <p class="player-name" id="current-player-name"></p>
 
     <div class="status info" id="status">
-      Cliquez sur "Activer la caméra" pour commencer
+      Cliquez sur "Activer la caméra" ou "Ignorer" pour continuer sans photo
     </div>
 
     <div class="camera-container" id="camera-container" style="display: none;">
@@ -255,6 +281,9 @@
       <button class="btn btn-primary" id="btn-start-camera" onclick="startCamera()">
         📷 Activer la caméra
       </button>
+      <button class="btn btn-secondary" id="btn-skip" onclick="skipPhoto()">
+        ⏭️ Ignorer
+      </button>
       <button class="btn btn-success" id="btn-capture" onclick="capturePhoto()" style="display: none;">
         📸 Prendre la photo
       </button>
@@ -274,6 +303,10 @@
       <div class="progress-bar">
         <div class="progress-fill" id="progress-fill"></div>
       </div>
+    </div>
+
+    <div class="skip-notice" id="skip-notice" style="display: none;">
+      ℹ️ Vous pouvez jouer sans photos. Des emojis seront affichés à la place.
     </div>
   </div>
 
@@ -309,14 +342,40 @@
         
         document.getElementById('camera-container').style.display = 'block';
         document.getElementById('btn-start-camera').style.display = 'none';
+        document.getElementById('btn-skip').style.display = 'none';
         document.getElementById('btn-capture').style.display = 'inline-block';
         document.getElementById('status').textContent = '✅ Caméra activée ! Positionnez-vous et cliquez sur "Prendre la photo"';
         document.getElementById('status').className = 'status success';
+        document.getElementById('skip-notice').style.display = 'none';
         
       } catch (err) {
         console.error('Erreur caméra:', err);
-        document.getElementById('status').textContent = '❌ Impossible d\'accéder à la caméra. Vérifiez les permissions.';
-        document.getElementById('status').className = 'status info';
+        document.getElementById('status').textContent = '❌ Impossible d\'accéder à la caméra. Utilisez "Ignorer" pour continuer sans photo.';
+        document.getElementById('status').className = 'status warning';
+      }
+    }
+
+    function skipPhoto() {
+      console.log('⏭️ Photo ignorée pour le joueur', currentPlayer);
+      
+      if (currentPlayer === 1) {
+        photo1 = '';  // Photo vide
+        document.getElementById('status').textContent = '⏭️ Photo du Joueur 1 ignorée';
+        document.getElementById('status').className = 'status warning';
+      } else {
+        photo2 = '';  // Photo vide
+        document.getElementById('status').textContent = '⏭️ Photo du Joueur 2 ignorée';
+        document.getElementById('status').className = 'status warning';
+      }
+      
+      document.getElementById('skip-notice').style.display = 'block';
+      document.getElementById('btn-skip').style.display = 'none';
+      document.getElementById('btn-start-camera').style.display = 'none';
+      
+      if (currentPlayer === 1) {
+        document.getElementById('btn-next').style.display = 'inline-block';
+      } else {
+        document.getElementById('btn-start-game').style.display = 'inline-block';
       }
     }
 
@@ -373,6 +432,7 @@
       document.getElementById('btn-capture').style.display = 'none';
       document.getElementById('btn-capture').disabled = false;
       document.getElementById('btn-retake').style.display = 'inline-block';
+      document.getElementById('skip-notice').style.display = 'none';
       
       if (currentPlayer === 1) {
         document.getElementById('btn-next').style.display = 'inline-block';
@@ -381,6 +441,7 @@
         document.getElementById('btn-start-game').style.display = 'inline-block';
         document.getElementById('status').textContent = '✅ Photo du Joueur 2 capturée ! Prêts à jouer ?';
       }
+      document.getElementById('status').className = 'status success';
     }
 
     function retakePhoto() {
@@ -388,6 +449,7 @@
       document.getElementById('btn-next').style.display = 'none';
       document.getElementById('btn-start-game').style.display = 'none';
       document.getElementById('btn-start-camera').style.display = 'inline-block';
+      document.getElementById('btn-skip').style.display = 'inline-block';
       
       if (currentPlayer === 1) {
         photo1 = null;
@@ -397,7 +459,8 @@
         document.getElementById('preview-player2').classList.remove('show');
       }
       
-      document.getElementById('status').textContent = 'Cliquez sur "Activer la caméra" pour reprendre la photo';
+      document.getElementById('status').textContent = 'Cliquez sur "Activer la caméra" pour reprendre la photo ou "Ignorer" pour continuer sans photo';
+      document.getElementById('status').className = 'status info';
     }
 
     function nextPlayer() {
@@ -406,7 +469,8 @@
       document.getElementById('btn-retake').style.display = 'none';
       document.getElementById('btn-next').style.display = 'none';
       document.getElementById('btn-start-camera').style.display = 'inline-block';
-      document.getElementById('status').textContent = 'Au tour du Joueur 2 !';
+      document.getElementById('btn-skip').style.display = 'inline-block';
+      document.getElementById('status').textContent = 'Au tour du Joueur 2 ! Activer la caméra ou ignorer ?';
       document.getElementById('status').className = 'status info';
       
       // Mettre à jour la barre de progression
@@ -420,22 +484,13 @@
       document.getElementById('status').className = 'status info';
       document.getElementById('btn-start-game').disabled = true;
       
-      // Vérifier que les photos sont bien présentes
-      if (!photo1 || !photo2) {
-        console.error('❌ Photos manquantes!');
-        document.getElementById('status').textContent = '❌ Les deux photos doivent être prises';
-        document.getElementById('status').className = 'status info';
-        document.getElementById('btn-start-game').disabled = false;
-        return;
-      }
-      
-      // Préparer les données en JSON
+      // Préparer les données en JSON (photos peuvent être vides '')
       const gameData = {
         player1: player1Name,
         player2: player2Name,
         difficulty: difficulty,
-        photo1: photo1,
-        photo2: photo2
+        photo1: photo1 || '',
+        photo2: photo2 || ''
       };
       
       console.log('📤 Envoi des données:', {
@@ -469,16 +524,15 @@
           console.error('❌ Erreur serveur:', response.status, errorText);
           
           document.getElementById('status').textContent = `❌ Erreur lors de la création de la partie (${response.status})`;
-          document.getElementById('status').className = 'status info';
+          document.getElementById('status').className = 'status warning';
           document.getElementById('btn-start-game').disabled = false;
           
-          // Afficher l'erreur détaillée
           alert(`Erreur ${response.status}: ${errorText}`);
         }
       } catch (err) {
         console.error('❌ Erreur réseau:', err);
         document.getElementById('status').textContent = '❌ Erreur de connexion';
-        document.getElementById('status').className = 'status info';
+        document.getElementById('status').className = 'status warning';
         document.getElementById('btn-start-game').disabled = false;
         
         alert('Erreur de connexion: ' + err.message);
